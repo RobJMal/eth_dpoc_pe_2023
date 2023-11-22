@@ -249,8 +249,6 @@ def generate_possible_actions(current_state):
     '''
     Returns a list of possible actions given a current state. 
     '''
-    # possible_actions = [Constants.V_STAY]
-
     z_i = current_state[1]
 
     if(z_i<(Constants.D-1) and z_i > 0):
