@@ -53,7 +53,7 @@ def compute_stage_cost(Constants):
     y_city_coordinates=CITIES_LOCATIONS_array[:, 0]
 
     G = np.ones((K, L)) * np.inf
-    for i in range(len(K)):
+    for i in range(K):
         if(state_space[i][1]==0):
             G[i,Constants.V_DOWN]=np.inf
             G[i,Constants.V_STAY]=compute_cities_cost(Constants,state_space[i],x_city_coordinates,y_city_coordinates,Constants.V_STAY)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(Constants,state_space[i])
