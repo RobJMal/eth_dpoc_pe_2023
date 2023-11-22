@@ -63,22 +63,22 @@ def solution(P, G, alpha):
         # Keeping a copy so algorithm references previous values while this maintains current ones
         J_copy = np.zeros(K)
 
-        for current_state in range(K):
+        for i in range(K):
 
-            next_states_list = generate_possible_next_states(current_state)
-            possible_actions_list = generate_possible_actions(current_state)
+            next_states_list = generate_possible_next_states(i)
+            possible_actions_list = generate_possible_actions(i)
 
-                for action in possible_actions_list:
-                    action_total = 0
+            for action in possible_actions_list:
+                action_total = 0
 
-                    for next_state in next_states_list:
-                        transition_probability = P[current_state, next_state, action]
-                        reward = G[current_state, action]
-                        action_total += transition_probability*(reward + alpha * J_opt[next_state])
+                for j in next_states_list:
+                    transition_probability = P[i, j, action]
+                    cost = G[i, action]
+                    action_total += transition_probability*(cost + alpha * J_opt[j])
 
-                    if action_total > J_copy[current_state]:
-                        J_copy[current_state] = action_total
-                        u_opt[current_state] = action
+                if action_total > J_copy[i]:
+                    J_copy[i] = action_total
+                    u_opt[i] = action
 
         delta_v = np.max(np.abs(J_copy - J_opt))
         J_opt = J_copy
@@ -114,12 +114,24 @@ def generate_possible_next_states(current_state):
     '''
     Returns a list of possible next states given a current state. 
     '''
+    t_i, z_i, y_i, x_i = current_state[0], current_state[1], current_state[2], current_state[3]
 
     return []
 
-def generate_possible_actions(current_state):
+def generate_possible_actions(current_state, Constants):
     '''
     Returns a list of possible actions given a current state. 
     '''
+    # possible_actions = [Constants.V_STAY]
 
+    z_i = current_state[1]
+
+    if(z_i<(Constants.D-1) and z_i > 0):
+        return [Constants.V_DOWN, Constants.V_STAY, Constants.V_UP]
+    elif z_i == (Constants.D-1):
+        return [Constants.V_DOWN, Constants.V_STAY]
+    elif z_i == 0:
+        return [Constants.V_STAY, Constants.V_UP]
+
+    print("Error with generate_possible_actions!!!")
     return []
