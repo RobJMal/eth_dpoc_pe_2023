@@ -20,6 +20,9 @@
 
 import numpy as np
 
+# Additional imports
+import itertools
+import Constants
 
 def solution(P, G, alpha):
     """Computes the optimal cost and the optimal control input for each 
@@ -54,6 +57,12 @@ def solution(P, G, alpha):
     
     # TODO implement Value Iteration, Policy Iteration, 
     #      Linear Programming or a combination of these
+    t = np.arange(0, Constants.T)  
+    z = np.arange(0, Constants.D)  
+    y = np.arange(0, Constants.N)  
+    x = np.arange(0, Constants.M)  
+    state_space = np.array(list(itertools.product(t, z, y, x)))
+
     delta_v = float('inf')
     epsilon = 0.001
 
@@ -65,8 +74,8 @@ def solution(P, G, alpha):
 
         for i in range(K):
 
-            next_states_list = generate_possible_next_states(i)
-            possible_actions_list = generate_possible_actions(i)
+            next_states_list = generate_possible_next_states(state_space[i], state_space)
+            possible_actions_list = generate_possible_actions(state_space[i])
 
             for action in possible_actions_list:
                 action_total = 0
@@ -110,15 +119,135 @@ def freestyle_solution(Constants):
 
     return J_opt, u_opt
 
-def generate_possible_next_states(current_state):
+def generate_possible_next_states(current_state, state_space):
     '''
     Returns a list of possible next states given a current state. 
+
+    Returns the index of the next possible states in the flattened array 
     '''
+
     t_i, z_i, y_i, x_i = current_state[0], current_state[1], current_state[2], current_state[3]
 
+    if(t_i<(Constants.T-1)):
+        t_j=t_i+1
+    else:
+        t_j=0
+    
+    if(z_i<(Constants.D-1)):
+        z_up_j=z_i+1
+    else:
+        z_up_j=z_i
+    
+    if(z_i>0):
+        z_down_j=z_i-1
+    else:
+        z_down_j=0
+
+    if(y_i>0):
+        y_north_j= y_i-1
+    else:
+        y_north_j=0
+    
+    if(y_i<(Constants.N-1)):
+        y_south_j=y_i+1
+    else:
+        y_south_j= y_i
+    
+    if(x_i<(Constants.M-1)):
+        x_east_j=x_i+1
+    else:
+        x_east_j=0
+
+    if(x_i>0):
+        x_west_j=x_i-1
+    else:
+        x_west_j=Constants.M-1
+
+    j_up=np.where((state_space == (t_j, z_up_j, y_i, x_i)).all(axis=1))[0][0]
+    j_stay=np.where((state_space == (t_j, z_i, y_i, x_i)).all(axis=1))[0][0]
+    j_down=np.where((state_space == (t_j, z_down_j, y_i, x_i)).all(axis=1))[0][0]
+
+    j_up_east=np.where((state_space == (t_j, z_up_j, y_i, x_east_j)).all(axis=1))[0][0]
+    j_up_west=np.where((state_space == (t_j, z_up_j, y_i, x_west_j)).all(axis=1))[0][0]
+
+    j_stay_east=np.where((state_space == (t_j, z_i, y_i, x_east_j)).all(axis=1))[0][0]
+    j_stay_west=np.where((state_space == (t_j, z_i, y_i, x_west_j)).all(axis=1))[0][0]
+
+    j_down_east=np.where((state_space == (t_j, z_down_j, y_i, x_east_j)).all(axis=1))[0][0]
+    j_down_west=np.where((state_space == (t_j, z_down_j, y_i, x_west_j)).all(axis=1))[0][0]
+
+    j_up_north=np.where((state_space == (t_j, z_up_j, y_north_j, x_i)).all(axis=1))[0][0]
+    j_up_south=np.where((state_space == (t_j, z_up_j, y_south_j, x_i)).all(axis=1))[0][0]
+
+    j_stay_north=np.where((state_space == (t_j, z_i, y_north_j, x_i)).all(axis=1))[0][0]
+    j_stay_south=np.where((state_space == (t_j, z_i, y_south_j, x_i)).all(axis=1))[0][0]
+
+    j_down_north=np.where((state_space == (t_j, z_down_j, y_north_j, x_i)).all(axis=1))[0][0]
+    j_down_south=np.where((state_space == (t_j, z_down_j, y_south_j, x_i)).all(axis=1))[0][0]
+
+    if(z_i<(Constants.D-1) and z_i > 0):
+        return [
+            j_up,
+            j_stay,
+            j_down,
+
+            j_up_east,
+            j_up_west,
+
+            j_stay_east,
+            j_stay_west,
+
+            j_down_east,
+            j_down_west,
+
+            j_up_north,
+            j_up_south,
+
+            j_stay_north,
+            j_stay_south,
+
+            j_down_north,
+            j_down_south
+        ]
+    elif z_i == (Constants.D-1):
+        return [
+            j_stay,
+            j_down,
+
+            j_stay_east,
+            j_stay_west,
+
+            j_down_east,
+            j_down_west,
+            
+            j_stay_north,
+            j_stay_south,
+
+            j_down_north,
+            j_down_south
+        ]
+    elif z_i == 0:
+        return [
+            j_up,
+            j_stay,
+
+            j_up_east,
+            j_up_west,
+
+            j_stay_east,
+            j_stay_west,
+            
+            j_up_north,
+            j_up_south,
+
+            j_stay_north,
+            j_stay_south
+        ]
+
+    print("Error with generate_possible_next_states!!!")
     return []
 
-def generate_possible_actions(current_state, Constants):
+def generate_possible_actions(current_state):
     '''
     Returns a list of possible actions given a current state. 
     '''
