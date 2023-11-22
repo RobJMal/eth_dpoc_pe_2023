@@ -121,8 +121,6 @@ def freestyle_solution(Constants):
 
 def generate_possible_next_states(current_state, state_space):
     '''
-    Returns a list of possible next states given a current state. 
-
     Returns the index of the next possible states in the flattened array 
     '''
 
