@@ -50,10 +50,38 @@ def solution(P, G, alpha):
     K = G.shape[0]
 
     J_opt = np.zeros(K)
-    u_opt = np.zeros(K)
+    u_opt = np.zeros(K) 
     
     # TODO implement Value Iteration, Policy Iteration, 
     #      Linear Programming or a combination of these
+    delta_v = float('inf')
+    epsilon = 0.001
+
+    while delta_v > epsilon:
+        delta_v = 0
+
+        # Keeping a copy so algorithm references previous values while this maintains current ones
+        J_copy = np.zeros(K)
+
+        for current_state in range(K):
+
+            next_states_list = generate_possible_next_states(current_state)
+            possible_actions_list = generate_possible_actions(current_state)
+
+                for action in possible_actions_list:
+                    action_total = 0
+
+                    for next_state in next_states_list:
+                        transition_probability = P[current_state, next_state, action]
+                        reward = G[current_state, action]
+                        action_total += transition_probability*(reward + alpha * J_opt[next_state])
+
+                    if action_total > J_copy[current_state]:
+                        J_copy[current_state] = action_total
+                        u_opt[current_state] = action
+
+        delta_v = np.max(np.abs(J_copy - J_opt))
+        J_opt = J_copy
 
     return J_opt, u_opt
 
@@ -81,3 +109,17 @@ def freestyle_solution(Constants):
     #      optimizations.
 
     return J_opt, u_opt
+
+def generate_possible_next_states(current_state):
+    '''
+    Returns a list of possible next states given a current state. 
+    '''
+
+    return []
+
+def generate_possible_actions(current_state):
+    '''
+    Returns a list of possible actions given a current state. 
+    '''
+
+    return []
