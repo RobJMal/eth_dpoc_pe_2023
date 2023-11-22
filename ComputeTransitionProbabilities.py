@@ -19,6 +19,8 @@
 
 import numpy as np
 
+# Additional imports
+import itertools
 
 def compute_transition_probabilities(Constants):
     """Computes the transition probability matrix P.
@@ -35,8 +37,6 @@ def compute_transition_probabilities(Constants):
     Returns:
         np.array: Transition probability matrix of shape (K,K,L).
     """
-    import itertools
-
     t = np.arange(0, Constants.T)  
     z = np.arange(0, Constants.D)  
     y = np.arange(0, Constants.N)  
@@ -117,79 +117,74 @@ def compute_transition_probabilities(Constants):
 
 
         if((z_i< Constants.D-1) and (z_i>0) and (y_i>0) and (y_i<(Constants.N-1)) and (x_i>0)and (x_i< Constants.M)):
-            for l in range(L):
-                match l:
-                    case Constants.V_DOWN:
+            # Constants.V_DOWN
+            P[i,j_up,Constants.V_DOWN]=0
+            P[i,j_stay,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
+            P[i,j_down,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
 
-                        P[i,j_up,l]=0
-                        P[i,j_stay,l]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
-                        P[i,j_down,l]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
+            P[i,j_up_east,Constants.V_DOWN]=0
+            P[i,j_up_west,Constants.V_DOWN]=0
 
-                        P[i,j_up_east,l]=0
-                        P[i,j_up_west,l]=0
+            P[i,j_stay_east,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
+            P[i,j_stay_west,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
 
-                        P[i,j_stay_east,l]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
-                        P[i,j_stay_west,l]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
+            P[i,j_down_east,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
+            P[i,j_down_west,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
 
-                        P[i,j_down_east,l]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
-                        P[i,j_down_west,l]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
+            P[i,j_up_north,Constants.V_DOWN]=0
+            P[i,j_up_south,Constants.V_DOWN]=0
 
-                        P[i,j_up_north,l]=0
-                        P[i,j_up_south,l]=0
+            P[i, j_stay_north,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
+            P[i,j_stay_south,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
 
-                        P[i, j_stay_north,l]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
-                        P[i,j_stay_south,l]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
+            P[i,j_down_north,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
+            P[i,J_down_south,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
 
-                        P[i,j_down_north,l]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
-                        P[i,J_down_south,l]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
+            # Constants.V_STAY   
+            P[i,j_up,Constants.V_STAY]=0
+            P[i,j_stay,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
+            P[i,j_down,Constants.V_STAY]=0
 
-                    case Constants.V_STAY:
-                        
-                        P[i,j_up,l]=0
-                        P[i,j_stay,l]=Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
-                        P[i,j_down,l]=0
+            P[i,j_up_east,Constants.V_STAY]=0
+            P[i,j_up_west,Constants.V_STAY]=0
 
-                        P[i,j_up_east,l]=0
-                        P[i,j_up_west,l]=0
+            P[i,j_stay_east,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
+            P[i,j_stay_west,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
 
-                        P[i,j_stay_east,l]=Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
-                        P[i,j_stay_west,l]=Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
+            P[i,j_down_east,Constants.V_STAY]=0
+            P[i,j_down_west,Constants.V_STAY]=0
 
-                        P[i,j_down_east,l]=0
-                        P[i,j_down_west,l]=0
+            P[i,j_up_north,Constants.V_STAY]=0
+            P[i,j_up_south,Constants.V_STAY]=0
 
-                        P[i,j_up_north,l]=0
-                        P[i,j_up_south,l]=0
+            P[i, j_stay_north,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
+            P[i,j_stay_south,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
 
-                        P[i, j_stay_north,l]=Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
-                        P[i,j_stay_south,l]=Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
+            P[i,j_down_north,Constants.V_STAY]=0
+            P[i,J_down_south,Constants.V_STAY]=0
 
-                        P[i,j_down_north,l]=0
-                        P[i,J_down_south,l]=0
-                    case Constants.V_UP:
+            # Constants.V_UP
+            P[i,j_up,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
+            P[i,j_stay,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
+            P[i,j_down,Constants.V_UP]=0
 
-                        P[i,j_up,l]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
-                        P[i,j_stay,l]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
-                        P[i,j_down,l]=0
+            P[i,j_up_east,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
+            P[i,j_up_west,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
 
-                        P[i,j_up_east,l]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
-                        P[i,j_up_west,l]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
+            P[i,j_stay_east,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
+            P[i,j_stay_west,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
 
-                        P[i,j_stay_east,l]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
-                        P[i,j_stay_west,l]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
+            P[i,j_down_east,Constants.V_UP]=0
+            P[i,j_down_west,Constants.V_UP]=0
 
-                        P[i,j_down_east,l]=0
-                        P[i,j_down_west,l]=0
+            P[i,j_up_north,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
+            P[i,j_up_south,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
 
-                        P[i,j_up_north,l]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
-                        P[i,j_up_south,l]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
+            P[i, j_stay_north,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
+            P[i,j_stay_south,Constants.V_UP]==Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
 
-                        P[i, j_stay_north,l]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
-                        P[i,j_stay_south,l]==Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
-
-                        P[i,j_down_north,l]=0
-                        P[i,J_down_south,l]=0
-
+            P[i,j_down_north,Constants.V_UP]=0
+            P[i,J_down_south,Constants.V_UP]=0
 
 
     return P
