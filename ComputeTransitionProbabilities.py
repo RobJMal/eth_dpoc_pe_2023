@@ -44,14 +44,13 @@ def compute_transition_probabilities(Constants):
     state_space = np.array(list(itertools.product(t, z, y, x)))
 
     K = Constants.T * Constants.D * Constants.N * Constants.M
-    print("K: ",K)
     input_space = np.array([Constants.V_DOWN, Constants.V_STAY, Constants.V_UP])
     L = len(input_space)
 
     P = np.zeros((K, K, L))
     # TODO fill the transition probability matrix P here
-    for i in range (K):#K
-        # i=499
+    for i in range (1):#K
+        i = 262
         t_i=state_space[i][0]
         z_i=state_space[i][1]
         y_i=state_space[i][2]
@@ -94,10 +93,7 @@ def compute_transition_probabilities(Constants):
         else:
             x_west_j=Constants.M-1
         
-        print("X_WEST_J: ", x_west_j)
-
-
-
+        
         j_up=np.where((state_space == (t_j, z_up_j, y_i, x_i)).all(axis=1))[0][0]
         j_stay=np.where((state_space == (t_j, z_i, y_i, x_i)).all(axis=1))[0][0]
         j_down=np.where((state_space == (t_j, z_down_j, y_i, x_i)).all(axis=1))[0][0]
@@ -120,28 +116,28 @@ def compute_transition_probabilities(Constants):
         j_down_north=np.where((state_space == (t_j, z_down_j, y_north_j, x_i)).all(axis=1))[0][0]
         J_down_south=np.where((state_space == (t_j, z_down_j, y_south_j, x_i)).all(axis=1))[0][0]
 
-        print_state("up: ", j_up, state_space)
-        print_state("stay: ", j_stay, state_space)
-        print_state("down: ", j_down, state_space)
+        # print_state("up: ", j_up, state_space)
+        # print_state("stay: ", j_stay, state_space)
+        # print_state("down: ", j_down, state_space)
 
-        print_state("up east: ", j_up_east, state_space)
-        print_state("up west: ", j_up_west, state_space)
+        # print_state("up east: ", j_up_east, state_space)
+        # print_state("up west: ", j_up_west, state_space)
 
-        print_state("stay east: ", j_stay_east, state_space)
-        print_state("stay west: ", j_stay_west, state_space)
+        # print_state("stay east: ", j_stay_east, state_space)
+        # print_state("stay west: ", j_stay_west, state_space)
 
-        print_state("down east: ", j_down_east, state_space)
-        print_state("down west: ", j_down_west, state_space)
+        # print_state("down east: ", j_down_east, state_space)
+        # print_state("down west: ", j_down_west, state_space)
 
-        print_state("up north: ", j_up_north, state_space)
-        print_state("up south: ", j_up_south, state_space)
+        # print_state("up north: ", j_up_north, state_space)
+        # print_state("up south: ", j_up_south, state_space)
 
-        print_state("stay north: ", j_stay_north, state_space)
-        print_state("stay south: ", j_stay_south, state_space)
+        # print_state("stay north: ", j_stay_north, state_space)
+        # print_state("stay south: ", j_stay_south, state_space)
 
-        print_state("down north: ", j_down_north, state_space)
-        print_state("down south: ", J_down_south, state_space)
-        print()
+        # print_state("down north: ", j_down_north, state_space)
+        # print_state("down south: ", J_down_south, state_space)
+        # print()
 
         y_north_limit = 0
         y_south_limit = 0
@@ -295,6 +291,8 @@ def compute_transition_probabilities(Constants):
                                               Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
                 P[i,j_up,Constants.V_UP]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
                                               Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
+    
+    print_probabilities("State space i", i, state_space, Constants, P)
     # print(P.shape)
     # non_zero_indices = np.nonzero(P)
     # for index in zip(*non_zero_indices):
@@ -309,3 +307,142 @@ def print_state(state_name, i, state_space):
     x_i=state_space[i][3]
 
     print(state_name + "(" + str(t_i) + ", " + str(z_i) + ", " + str(y_i) + ", " + str(x_i) + ")")
+
+def print_probabilities(name, i, state_space, Constants, P):
+    t_i=state_space[i][0]
+    z_i=state_space[i][1]
+    y_i=state_space[i][2]
+    x_i=state_space[i][3]
+
+    if(t_i<(Constants.T-1)):
+        t_j=t_i+1
+    else:
+        t_j=0
+    
+    if(z_i<(Constants.D-1)):
+        z_up_j=z_i+1
+    else:
+        z_up_j=z_i
+    
+    if(z_i>0):
+        z_down_j=z_i-1
+    else:
+        z_down_j=0
+
+    if(y_i>0):
+        y_north_j= y_i-1
+    else:
+        y_north_j=0
+    
+    if(y_i<(Constants.N-1)):
+        y_south_j=y_i+1
+    else:
+        y_south_j= y_i
+    
+    if(x_i<(Constants.M-1)):
+        x_east_j=x_i+1
+    else:
+        x_east_j=0
+
+    if(x_i>0):
+        x_west_j=x_i-1
+    else:
+        x_west_j=Constants.M-1
+
+    j_up=np.where((state_space == (t_j, z_up_j, y_i, x_i)).all(axis=1))[0][0]
+    j_stay=np.where((state_space == (t_j, z_i, y_i, x_i)).all(axis=1))[0][0]
+    j_down=np.where((state_space == (t_j, z_down_j, y_i, x_i)).all(axis=1))[0][0]
+
+    j_up_east=np.where((state_space == (t_j, z_up_j, y_i, x_east_j)).all(axis=1))[0][0]
+    j_up_west=np.where((state_space == (t_j, z_up_j, y_i, x_west_j)).all(axis=1))[0][0]
+
+    j_stay_east=np.where((state_space == (t_j, z_i, y_i, x_east_j)).all(axis=1))[0][0]
+    j_stay_west=np.where((state_space == (t_j, z_i, y_i, x_west_j)).all(axis=1))[0][0]
+
+    j_down_east=np.where((state_space == (t_j, z_down_j, y_i, x_east_j)).all(axis=1))[0][0]
+    j_down_west=np.where((state_space == (t_j, z_down_j, y_i, x_west_j)).all(axis=1))[0][0]
+
+    j_up_north=np.where((state_space == (t_j, z_up_j, y_north_j, x_i)).all(axis=1))[0][0]
+    j_up_south=np.where((state_space == (t_j, z_up_j, y_south_j, x_i)).all(axis=1))[0][0]
+
+    j_stay_north=np.where((state_space == (t_j, z_i, y_north_j, x_i)).all(axis=1))[0][0]
+    j_stay_south=np.where((state_space == (t_j, z_i, y_south_j, x_i)).all(axis=1))[0][0]
+
+    j_down_north=np.where((state_space == (t_j, z_down_j, y_north_j, x_i)).all(axis=1))[0][0]
+    J_down_south=np.where((state_space == (t_j, z_down_j, y_south_j, x_i)).all(axis=1))[0][0]
+
+    total_probability_vup = (
+        P[i,j_up,Constants.V_UP] +
+        P[i,j_stay,Constants.V_UP] +
+        P[i,j_down,Constants.V_UP] +
+
+        P[i,j_up_east,Constants.V_UP] +
+        P[i,j_up_west,Constants.V_UP] +
+
+        P[i,j_stay_east,Constants.V_UP] +
+        P[i,j_stay_west,Constants.V_UP] +
+
+        P[i,j_down_east,Constants.V_UP] +
+        P[i,j_down_west,Constants.V_UP] +
+
+        P[i,j_up_north,Constants.V_UP] +
+        P[i,j_up_south,Constants.V_UP] +
+
+        P[i, j_stay_north,Constants.V_UP] +
+        P[i,j_stay_south,Constants.V_UP] +
+
+        P[i,j_down_north,Constants.V_UP] +
+        P[i,J_down_south,Constants.V_UP]
+    )
+
+    total_probability_vstay = (
+        P[i,j_up,Constants.V_STAY] +
+        P[i,j_stay,Constants.V_STAY] +
+        P[i,j_down,Constants.V_STAY] +
+
+        P[i,j_up_east,Constants.V_STAY] +
+        P[i,j_up_west,Constants.V_STAY] +
+
+        P[i,j_stay_east,Constants.V_STAY] +
+        P[i,j_stay_west,Constants.V_STAY] +
+
+        P[i,j_down_east,Constants.V_STAY] +
+        P[i,j_down_west,Constants.V_STAY] +
+
+        P[i,j_up_north,Constants.V_STAY] +
+        P[i,j_up_south,Constants.V_STAY] +
+
+        P[i, j_stay_north,Constants.V_STAY] +
+        P[i,j_stay_south,Constants.V_STAY] +
+
+        P[i,j_down_north,Constants.V_STAY] +
+        P[i,J_down_south,Constants.V_STAY]
+    )
+
+    total_probability_vdown = (
+        P[i,j_up,Constants.V_DOWN] +
+        P[i,j_stay,Constants.V_DOWN] +
+        P[i,j_down,Constants.V_DOWN] +
+
+        P[i,j_up_east,Constants.V_DOWN] +
+        P[i,j_up_west,Constants.V_DOWN] +
+
+        P[i,j_stay_east,Constants.V_DOWN] +
+        P[i,j_stay_west,Constants.V_DOWN] +
+
+        P[i,j_down_east,Constants.V_DOWN] +
+        P[i,j_down_west,Constants.V_DOWN] +
+
+        P[i,j_up_north,Constants.V_DOWN] +
+        P[i,j_up_south,Constants.V_DOWN] +
+
+        P[i, j_stay_north,Constants.V_DOWN] +
+        P[i,j_stay_south,Constants.V_DOWN] +
+
+        P[i,j_down_north,Constants.V_DOWN] +
+        P[i,J_down_south,Constants.V_DOWN]
+    )
+
+    print(name + ", V_UP: " + str(total_probability_vup))
+    print(name + ", V_STAY: " + str(total_probability_vstay))
+    print(name + ", V_DOWN: " + str(total_probability_vdown))
