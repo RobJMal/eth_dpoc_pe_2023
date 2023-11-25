@@ -57,14 +57,14 @@ def solution(P, G, alpha):
     
     # TODO implement Value Iteration, Policy Iteration, 
     #      Linear Programming or a combination of these
-    t = np.arange(0, Constants.T)  
-    z = np.arange(0, Constants.D)  
-    y = np.arange(0, Constants.N)  
-    x = np.arange(0, Constants.M)  
+    t = np.arange(0, Constants.Constants.T)  
+    z = np.arange(0, Constants.Constants.D)  
+    y = np.arange(0, Constants.Constants.N)  
+    x = np.arange(0, Constants.Constants.M)  
     state_space = np.array(list(itertools.product(t, z, y, x)))
 
     delta_v = float('inf')
-    epsilon = 0.001
+    epsilon = 0.0001
 
     while delta_v > epsilon:
         delta_v = 0
@@ -126,12 +126,12 @@ def generate_possible_next_states(current_state, state_space):
 
     t_i, z_i, y_i, x_i = current_state[0], current_state[1], current_state[2], current_state[3]
 
-    if(t_i<(Constants.T-1)):
+    if(t_i<(Constants.Constants.T-1)):
         t_j=t_i+1
     else:
         t_j=0
     
-    if(z_i<(Constants.D-1)):
+    if(z_i<(Constants.Constants.D-1)):
         z_up_j=z_i+1
     else:
         z_up_j=z_i
@@ -146,12 +146,12 @@ def generate_possible_next_states(current_state, state_space):
     else:
         y_north_j=0
     
-    if(y_i<(Constants.N-1)):
+    if(y_i<(Constants.Constants.N-1)):
         y_south_j=y_i+1
     else:
         y_south_j= y_i
     
-    if(x_i<(Constants.M-1)):
+    if(x_i<(Constants.Constants.M-1)):
         x_east_j=x_i+1
     else:
         x_east_j=0
@@ -159,7 +159,7 @@ def generate_possible_next_states(current_state, state_space):
     if(x_i>0):
         x_west_j=x_i-1
     else:
-        x_west_j=Constants.M-1
+        x_west_j=Constants.Constants.M-1
 
     j_up=np.where((state_space == (t_j, z_up_j, y_i, x_i)).all(axis=1))[0][0]
     j_stay=np.where((state_space == (t_j, z_i, y_i, x_i)).all(axis=1))[0][0]
@@ -183,7 +183,7 @@ def generate_possible_next_states(current_state, state_space):
     j_down_north=np.where((state_space == (t_j, z_down_j, y_north_j, x_i)).all(axis=1))[0][0]
     j_down_south=np.where((state_space == (t_j, z_down_j, y_south_j, x_i)).all(axis=1))[0][0]
 
-    if(z_i<(Constants.D-1) and z_i > 0):
+    if(z_i<(Constants.Constants.D-1) and z_i > 0):
         return [
             j_up,
             j_stay,
@@ -207,7 +207,7 @@ def generate_possible_next_states(current_state, state_space):
             j_down_north,
             j_down_south
         ]
-    elif z_i == (Constants.D-1):
+    elif z_i == (Constants.Constants.D-1):
         return [
             j_stay,
             j_down,
@@ -251,12 +251,12 @@ def generate_possible_actions(current_state):
     '''
     z_i = current_state[1]
 
-    if(z_i<(Constants.D-1) and z_i > 0):
-        return [Constants.V_DOWN, Constants.V_STAY, Constants.V_UP]
-    elif z_i == (Constants.D-1):
-        return [Constants.V_DOWN, Constants.V_STAY]
+    if(z_i<(Constants.Constants.D-1) and z_i > 0):
+        return [Constants.Constants.V_DOWN, Constants.Constants.V_STAY, Constants.Constants.V_UP]
+    elif z_i == (Constants.Constants.D-1):
+        return [Constants.Constants.V_DOWN, Constants.Constants.V_STAY]
     elif z_i == 0:
-        return [Constants.V_STAY, Constants.V_UP]
+        return [Constants.Constants.V_STAY, Constants.Constants.V_UP]
 
     print("Error with generate_possible_actions!!!")
     return []

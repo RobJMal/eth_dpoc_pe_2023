@@ -125,11 +125,11 @@ def compute_cities_cost(Constants,state,x_city_coordinates,y_city_coordinates,ac
     min_dist_x_sqrd = np.minimum(np.minimum(distance_x_m1, distance_x_0), distance_x_p1)
 
     if(action==Constants.V_UP):
-        cities_cost=np.sqrt(min_dist_x_sqrd +(y-y_city_coordinates)**2)+Constants.LAMBDA_LEVEL*(z+1)
+        cities_cost=np.sqrt(min_dist_x_sqrd +(y-y_city_coordinates)**2)+Constants.LAMBDA_LEVEL*(z)
     if(action==Constants.V_STAY):
         cities_cost=np.sqrt(min_dist_x_sqrd +(y-y_city_coordinates)**2)+Constants.LAMBDA_LEVEL*z
     if(action==Constants.V_DOWN):
-        cities_cost=np.sqrt(min_dist_x_sqrd +(y-y_city_coordinates)**2)+Constants.LAMBDA_LEVEL*(z-1)
+        cities_cost=np.sqrt(min_dist_x_sqrd +(y-y_city_coordinates)**2)+Constants.LAMBDA_LEVEL*(z)
 
     g_cities=np.sum(cities_cost)
 

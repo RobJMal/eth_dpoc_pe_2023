@@ -44,17 +44,20 @@ def compute_transition_probabilities(Constants):
     state_space = np.array(list(itertools.product(t, z, y, x)))
 
     K = Constants.T * Constants.D * Constants.N * Constants.M
+    print("K: ",K)
     input_space = np.array([Constants.V_DOWN, Constants.V_STAY, Constants.V_UP])
     L = len(input_space)
 
     P = np.zeros((K, K, L))
     # TODO fill the transition probability matrix P here
-    for i in range (K):
-        x=0
+    for i in range (1):#K
+        i=499
         t_i=state_space[i][0]
         z_i=state_space[i][1]
         y_i=state_space[i][2]
         x_i=state_space[i][3]
+        
+        print_state("current state: ", i, state_space)
 
         if(t_i<(Constants.T-1)):
             t_j=t_i+1
@@ -90,6 +93,8 @@ def compute_transition_probabilities(Constants):
             x_west_j=x_i-1
         else:
             x_west_j=Constants.M-1
+        
+        print("X_WEST_J: ", x_west_j)
 
 
 
@@ -114,6 +119,29 @@ def compute_transition_probabilities(Constants):
 
         j_down_north=np.where((state_space == (t_j, z_down_j, y_north_j, x_i)).all(axis=1))[0][0]
         J_down_south=np.where((state_space == (t_j, z_down_j, y_south_j, x_i)).all(axis=1))[0][0]
+
+        print_state("up: ", j_up, state_space)
+        print_state("stay: ", j_stay, state_space)
+        print_state("down: ", j_down, state_space)
+
+        print_state("up east: ", j_up_east, state_space)
+        print_state("up west: ", j_up_west, state_space)
+
+        print_state("stay east: ", j_stay_east, state_space)
+        print_state("stay west: ", j_stay_west, state_space)
+
+        print_state("down east: ", j_down_east, state_space)
+        print_state("down west: ", j_down_west, state_space)
+
+        print_state("up north: ", j_up_north, state_space)
+        print_state("up south: ", j_up_south, state_space)
+
+        print_state("stay north: ", j_stay_north, state_space)
+        print_state("stay south: ", j_stay_south, state_space)
+
+        print_state("down north: ", j_down_north, state_space)
+        print_state("down south: ", J_down_south, state_space)
+        print()
 
         # Constants.V_DOWN
         if z_i == 0: 
@@ -140,37 +168,37 @@ def compute_transition_probabilities(Constants):
             P[i,J_down_south,Constants.V_DOWN]=0
         else: 
             P[i,j_up,Constants.V_DOWN]=0
-            P[i,j_stay,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
-            P[i,j_down,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
+            P[i,j_stay,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
+            P[i,j_down,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
 
             P[i,j_up_east,Constants.V_DOWN]=0
             P[i,j_up_west,Constants.V_DOWN]=0
 
-            P[i,j_stay_east,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
-            P[i,j_stay_west,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
+            P[i,j_stay_east,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
+            P[i,j_stay_west,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
 
-            P[i,j_down_east,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
-            P[i,j_down_west,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
+            P[i,j_down_east,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
+            P[i,j_down_west,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]##########
 
             P[i,j_up_north,Constants.V_DOWN]=0
             P[i,j_up_south,Constants.V_DOWN]=0
 
-            P[i, j_stay_north,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
-            P[i,j_stay_south,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
+            P[i, j_stay_north,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
+            P[i,j_stay_south,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
 
-            P[i,j_down_north,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
-            P[i,J_down_south,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
+            P[i,j_down_north,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
+            P[i,J_down_south,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
 
         # Constants.V_STAY (always possible)
         P[i,j_up,Constants.V_STAY]=0
-        P[i,j_stay,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
+        P[i,j_stay,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
         P[i,j_down,Constants.V_STAY]=0
 
         P[i,j_up_east,Constants.V_STAY]=0
         P[i,j_up_west,Constants.V_STAY]=0
 
-        P[i,j_stay_east,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
-        P[i,j_stay_west,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
+        P[i,j_stay_east,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
+        P[i,j_stay_west,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
 
         P[i,j_down_east,Constants.V_STAY]=0
         P[i,j_down_west,Constants.V_STAY]=0
@@ -178,8 +206,8 @@ def compute_transition_probabilities(Constants):
         P[i,j_up_north,Constants.V_STAY]=0
         P[i,j_up_south,Constants.V_STAY]=0
 
-        P[i, j_stay_north,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
-        P[i,j_stay_south,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
+        P[i, j_stay_north,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
+        P[i,j_stay_south,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
 
         P[i,j_down_north,Constants.V_STAY]=0
         P[i,J_down_south,Constants.V_STAY]=0
@@ -208,26 +236,39 @@ def compute_transition_probabilities(Constants):
             P[i,j_down_north,Constants.V_UP]=0
             P[i,J_down_south,Constants.V_UP]=0
         else:
-            P[i,j_up,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
-            P[i,j_stay,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_STAY]
+            P[i,j_up,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
+            P[i,j_stay,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
             P[i,j_down,Constants.V_UP]=0
 
-            P[i,j_up_east,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
-            P[i,j_up_west,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
+            P[i,j_up_east,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
+            P[i,j_up_west,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
 
-            P[i,j_stay_east,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_EAST]
-            P[i,j_stay_west,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_WEST]
+            P[i,j_stay_east,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
+            P[i,j_stay_west,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
 
             P[i,j_down_east,Constants.V_UP]=0
             P[i,j_down_west,Constants.V_UP]=0
 
-            P[i,j_up_north,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
-            P[i,j_up_south,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
+            P[i,j_up_north,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
+            P[i,j_up_south,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
 
-            P[i, j_stay_north,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_NORTH]
-            P[i,j_stay_south,Constants.V_UP]==Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[H_SOUTH]
+            P[i, j_stay_north,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
+            P[i,j_stay_south,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
 
             P[i,j_down_north,Constants.V_UP]=0
+            
             P[i,J_down_south,Constants.V_UP]=0
+    # print(P.shape)
+    # non_zero_indices = np.nonzero(P)
+    # for index in zip(*non_zero_indices):
+    #     print(f"P{index} = {P[index]}")
 
     return P
+
+def print_state(state_name, i, state_space):
+    t_i=state_space[i][0]
+    z_i=state_space[i][1]
+    y_i=state_space[i][2]
+    x_i=state_space[i][3]
+
+    print(state_name + "(" + str(t_i) + ", " + str(z_i) + ", " + str(y_i) + ", " + str(x_i) + ")")

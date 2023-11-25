@@ -26,7 +26,7 @@ import pickle
 import itertools
 
 if __name__ == "__main__":
-    n_tests = 3
+    n_tests = 1#3
     for i in range(n_tests):
         print("-----------")
         print("Test " + str(i))
@@ -44,6 +44,13 @@ if __name__ == "__main__":
         y = np.arange(0, Constants.N)
         x = np.arange(0, Constants.M)
         state_space = np.array(list(itertools.product(t, z, y, x)))
+
+        print("In tester ----")
+        print(Constants.T)
+        print(Constants.D)
+        print(Constants.N)
+        print(Constants.M)
+        print("Tester ----")
 
         # Begin tests
         K = len(state_space)
