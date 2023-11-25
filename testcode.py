@@ -9,5 +9,5 @@ state_space = np.array(list(itertools.product(t, z, y, x)))
 print (state_space.shape)
 print(state_space[499])
 print(state_space[99])
-state_index = np.where((state_space == (2, 2, 2, 2)).all(axis=1))[0][0]
+state_index = np.where((state_space == (3, 2, 0, 2)).all(axis=1))[0][0]
 print(state_index)

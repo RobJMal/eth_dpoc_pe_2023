@@ -46,10 +46,10 @@ if __name__ == "__main__":
         state_space = np.array(list(itertools.product(t, z, y, x)))
 
         print("In tester ----")
-        print(Constants.T)
-        print(Constants.D)
-        print(Constants.N)
-        print(Constants.M)
+        print("t: ", Constants.T)
+        print("z: ", Constants.D)
+        print("y: ", Constants.N)
+        print("x: ", Constants.M)
         print("Tester ----")
 
         # Begin tests
