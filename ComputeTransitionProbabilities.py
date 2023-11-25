@@ -50,8 +50,8 @@ def compute_transition_probabilities(Constants):
 
     P = np.zeros((K, K, L))
     # TODO fill the transition probability matrix P here
-    for i in range (1):#K
-        i=499
+    for i in range (K):#K
+        # i=499
         t_i=state_space[i][0]
         z_i=state_space[i][1]
         y_i=state_space[i][2]
@@ -143,6 +143,13 @@ def compute_transition_probabilities(Constants):
         print_state("down south: ", J_down_south, state_space)
         print()
 
+        y_north_limit = 0
+        y_south_limit = 0
+        if y_i == 0:
+            y_north_limit = 1
+        if y_i == Constants.N - 1:
+            y_south_limit = 1
+
         # Constants.V_DOWN
         if z_i == 0: 
             P[i,j_up,Constants.V_DOWN]=0
@@ -189,6 +196,17 @@ def compute_transition_probabilities(Constants):
             P[i,j_down_north,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
             P[i,J_down_south,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
 
+            if y_north_limit:   # If north limit, akin to staying 
+                P[i,j_stay,Constants.V_DOWN]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
+                                              Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
+                P[i,j_down,Constants.V_DOWN]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
+                                              Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
+            elif y_south_limit:   # If north limit, akin to staying 
+                P[i,j_stay,Constants.V_DOWN]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
+                                              Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
+                P[i,j_down,Constants.V_DOWN]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
+                                              Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
+
         # Constants.V_STAY (always possible)
         P[i,j_up,Constants.V_STAY]=0
         P[i,j_stay,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
@@ -211,6 +229,14 @@ def compute_transition_probabilities(Constants):
 
         P[i,j_down_north,Constants.V_STAY]=0
         P[i,J_down_south,Constants.V_STAY]=0
+
+        if y_north_limit:   # If north limit, akin to staying 
+            P[i,j_stay,Constants.V_STAY]=(Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
+                                              Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
+        elif y_south_limit:   # If north limit, akin to staying 
+            P[i,j_stay,Constants.V_STAY]=(Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
+                                            Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
+               
 
         # Constants.V_UP
         if (z_i == (Constants.D - 1)):
@@ -258,6 +284,17 @@ def compute_transition_probabilities(Constants):
             P[i,j_down_north,Constants.V_UP]=0
             
             P[i,J_down_south,Constants.V_UP]=0
+
+            if y_north_limit:   # If north limit, akin to staying 
+                P[i,j_stay,Constants.V_UP]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
+                                              Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
+                P[i,j_up,Constants.V_UP]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
+                                              Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
+            elif y_south_limit:   # If north limit, akin to staying 
+                P[i,j_stay,Constants.V_UP]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
+                                              Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
+                P[i,j_up,Constants.V_UP]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
+                                              Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
     # print(P.shape)
     # non_zero_indices = np.nonzero(P)
     # for index in zip(*non_zero_indices):
