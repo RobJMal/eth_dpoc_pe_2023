@@ -45,6 +45,13 @@ if __name__ == "__main__":
         x = np.arange(0, Constants.M)
         state_space = np.array(list(itertools.product(t, z, y, x)))
 
+        # print("In tester ----")
+        # print("t: ", Constants.T)
+        # print("z: ", Constants.D)
+        # print("y: ", Constants.N)
+        # print("x: ", Constants.M)
+        # print("Tester ----")
+
         # Begin tests
         K = len(state_space)
         P = compute_transition_probabilities(Constants)
@@ -58,13 +65,23 @@ if __name__ == "__main__":
         G = compute_stage_cost(Constants)
         passed = True
         if not np.allclose(P, file["P"], rtol=1e-4, atol=1e-7):
+            # P2=file["P"]-P
+            # non_zero_indices = np.nonzero(P2)
+            # for index in zip(*non_zero_indices):
+            #     print(f"P{index} = {P2[index]}")
             print("Wrong transition probabilities")
+            # print(P[443,38,1])
             passed = False
         else:
             print("Correct transition probabilities")
 
         if not np.allclose(G, file["G"], rtol=1e-4, atol=1e-7):
+            print(G[498][1],file["G"][498][1])
             print("Wrong stage costs")
+            # G2=file["G"]-G
+            # non_zero_indices = np.nonzero(G2)
+            # for index in zip(*non_zero_indices):
+            #     print(f"G{index} = {G[index]}")
             passed = False
         else:
             print("Correct stage costs")
