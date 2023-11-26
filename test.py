@@ -28,6 +28,7 @@ import itertools
 if __name__ == "__main__":
     n_tests = 1#3
     for i in range(n_tests):
+        i=1
         print("-----------")
         print("Test " + str(i))
         with open("tests/test" + str(i) + ".pkl", "rb") as f:
@@ -65,7 +66,12 @@ if __name__ == "__main__":
         G = compute_stage_cost(Constants)
         passed = True
         if not np.allclose(P, file["P"], rtol=1e-4, atol=1e-7):
-            print("Wrong transition probabilities")
+            # P2=file["P"]-P
+            # non_zero_indices = np.nonzero(P2)
+            # for index in zip(*non_zero_indices):
+            #     print(f"P{index} = {P2[index]}")
+            # print("Wrong transition probabilities")
+            # print(P[443,38,1])
             passed = False
         else:
             print("Correct transition probabilities")
