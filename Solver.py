@@ -23,6 +23,9 @@ import numpy as np
 # Additional imports
 import itertools
 import Constants
+import cProfile
+
+profiler = cProfile.Profile()
 
 def solution(P, G, alpha):
     """Computes the optimal cost and the optimal control input for each 
@@ -49,7 +52,6 @@ def solution(P, G, alpha):
         np.array: The optimal control policy for the discounted stochastic SPP
 
     """
-
     K = G.shape[0]
 
     # J_opt = np.zeros(K)
@@ -73,11 +75,18 @@ def solution(P, G, alpha):
         # Keeping a copy so algorithm references previous values while this maintains current ones
         J_copy = np.copy(J_opt)
 
+        # profiler.enable()
         for i in range(K):
 
+            # profiler.enable()
             next_states_list = generate_possible_next_states(state_space[i], state_space)
-            possible_actions_list = generate_possible_actions(state_space[i])
+            # profiler.disable()
 
+            # profiler.enable()
+            possible_actions_list = generate_possible_actions(state_space[i])
+            # profiler.disable()
+
+            # profiler.enable()
             for action in possible_actions_list:
                 action_total = 0
 
@@ -91,9 +100,14 @@ def solution(P, G, alpha):
                 if value_action < J_copy[i]:
                     J_copy[i] = value_action
                     u_opt[i] = action
-
+            # profiler.disable()
+        
+        # profiler.disable()
+        
         delta_v = np.max(np.abs(J_copy - J_opt))
         J_opt = J_copy
+
+    profiler.dump_stats('optimization/solution_component_profile_0.prof')
 
     return J_opt, u_opt
 
@@ -128,8 +142,11 @@ def generate_possible_next_states(current_state, state_space):
     '''
     possible_next_states = []
 
+    profiler.enable()
     t_i, z_i, y_i, x_i = current_state[0], current_state[1], current_state[2], current_state[3]
+    profiler.disable()
 
+    profiler.enable()
     if(t_i<(Constants.Constants.T-1)):
         t_j=t_i+1
     else:
@@ -164,7 +181,9 @@ def generate_possible_next_states(current_state, state_space):
         x_west_j=x_i-1
     else:
         x_west_j=Constants.Constants.M-1
+    profiler.disable()
 
+    profiler.enable()
     j_up=np.where((state_space == (t_j, z_up_j, y_i, x_i)).all(axis=1))[0][0]
     j_stay=np.where((state_space == (t_j, z_i, y_i, x_i)).all(axis=1))[0][0]
     j_down=np.where((state_space == (t_j, z_down_j, y_i, x_i)).all(axis=1))[0][0]
@@ -186,7 +205,9 @@ def generate_possible_next_states(current_state, state_space):
 
     j_down_north=np.where((state_space == (t_j, z_down_j, y_north_j, x_i)).all(axis=1))[0][0]
     j_down_south=np.where((state_space == (t_j, z_down_j, y_south_j, x_i)).all(axis=1))[0][0]
+    profiler.disable()
 
+    profiler.enable()
     if(z_i<(Constants.Constants.D-1) and z_i > 0):
         possible_next_states = [
             j_up,
@@ -245,8 +266,8 @@ def generate_possible_next_states(current_state, state_space):
             j_stay_north,
             j_stay_south
         ]
+    profiler.disable()
 
-    # print("Error with generate_possible_next_states!!!")
     return list(set(possible_next_states))
 
 def generate_possible_actions(current_state):

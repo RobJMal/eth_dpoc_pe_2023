@@ -29,7 +29,7 @@ import itertools
 import cProfile
 
 if __name__ == "__main__":
-    n_tests = 3
+    n_tests = 1 # 3
     for i in range(n_tests):
         print("-----------")
         print("Test " + str(i))
@@ -98,6 +98,7 @@ if __name__ == "__main__":
         else:
             print("[freestyle solution] Correct optimal cost")
 
+        # Checking time for optimization
         cprofile_function_name = f'solution(P, G, {Constants.ALPHA})'
         cprofile_file_name = 'optimization/output_file_' + str(i) + '.prof'
         cProfile.run(cprofile_function_name, cprofile_file_name)
