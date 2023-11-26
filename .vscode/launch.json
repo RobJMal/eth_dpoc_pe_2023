@@ -1,0 +1,16 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Test Debug",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/robjmal/eth_rsc_masters_repos/eth_dpoc_pe_2023/test.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
