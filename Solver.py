@@ -53,7 +53,7 @@ def solution(P, G, alpha):
     K = G.shape[0]
 
     # J_opt = np.zeros(K)
-    J_opt = np.full(K, 1e06)
+    J_opt = np.full(K, 1e03)    # Based on testing performance 
     u_opt = np.zeros(K) 
     
     # TODO implement Value Iteration, Policy Iteration, 
@@ -65,7 +65,7 @@ def solution(P, G, alpha):
     state_space = np.array(list(itertools.product(t, z, y, x)))
 
     delta_v = float('inf')
-    epsilon = 0.0001
+    epsilon = 1e-05
 
     while delta_v > epsilon:
         delta_v = 0
@@ -87,14 +87,12 @@ def solution(P, G, alpha):
 
                 stage_cost = G[i, action]
                 value_action = stage_cost + alpha * action_total
-                # j_copy_i = J_copy[i]
 
                 if value_action < J_copy[i]:
                     J_copy[i] = value_action
                     u_opt[i] = action
 
         delta_v = np.max(np.abs(J_copy - J_opt))
-        print(delta_v)
         J_opt = J_copy
 
     return J_opt, u_opt

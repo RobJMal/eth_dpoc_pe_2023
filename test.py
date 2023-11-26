@@ -28,7 +28,6 @@ import itertools
 if __name__ == "__main__":
     n_tests = 3
     for i in range(n_tests):
-        i=0
         print("-----------")
         print("Test " + str(i))
         with open("tests/test" + str(i) + ".pkl", "rb") as f:
