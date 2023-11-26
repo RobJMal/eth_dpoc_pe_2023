@@ -56,7 +56,7 @@ def compute_transition_probabilities(Constants):
         y_i=state_space[i][2]
         x_i=state_space[i][3]
         
-        print_state("current state: ", i, state_space)
+        # print_state("current state: ", i, state_space)
 
         if(t_i<(Constants.T-1)):
             t_j=t_i+1
@@ -317,7 +317,7 @@ def compute_transition_probabilities(Constants):
                 P[i,j_up,Constants.V_UP]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
                                               Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
     
-    print_probabilities("State space i", i, state_space, Constants, P)
+    # print_probabilities("State space i", i, state_space, Constants, P)
     # print(P.shape)
     # non_zero_indices = np.nonzero(P)
     # for index in zip(*non_zero_indices):

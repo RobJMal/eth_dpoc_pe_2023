@@ -71,27 +71,26 @@ def compute_stage_cost(Constants):
         
     return G
 
-def compute_solar_cost(Constants,state):
+def compute_solar_cost(Constants,state_space):
     
-    """Computes the solar cost for a given state.
+    """Computes the solar cost for a given state_space.
 
     Args:
         Constants: The constants describing the problem instance.
-        t: the time space state
-        x: the x coordinate space state
+        t: the time space state_space
+        x: the x coordinate space state_space
 
 
     Returns:
         float: the gsolar cost 
     """
-    x=state[3]
-    t=state[0]
+    x=state_space[3]
+    t=state_space[0]
     x_sun=np.floor((Constants.M-1)*(Constants.T-1-t)/(Constants.T-1))
     x_sun=np.full(3,x_sun)
     c=np.array([-1,0,1])
     x_c=np.full(3,x)+c*Constants.M
     g_solar=np.min((x_c-x_sun)**2)
-
     return g_solar
 
 def compute_cities_cost(Constants,state,x_city_coordinates,y_city_coordinates,action):
@@ -124,12 +123,7 @@ def compute_cities_cost(Constants,state,x_city_coordinates,y_city_coordinates,ac
     distance_x_p1=np.sqrt((x_c_p1-x_city_coordinates)**2)
     min_dist_x_sqrd = np.minimum(np.minimum(distance_x_m1, distance_x_0), distance_x_p1)
 
-    if(action==Constants.V_UP):
-        cities_cost=np.sqrt(min_dist_x_sqrd +(y-y_city_coordinates)**2)+Constants.LAMBDA_LEVEL*(z)
-    if(action==Constants.V_STAY):
-        cities_cost=np.sqrt(min_dist_x_sqrd +(y-y_city_coordinates)**2)+Constants.LAMBDA_LEVEL*z
-    if(action==Constants.V_DOWN):
-        cities_cost=np.sqrt(min_dist_x_sqrd +(y-y_city_coordinates)**2)+Constants.LAMBDA_LEVEL*(z)
+    cities_cost=np.sqrt(min_dist_x_sqrd**2 +(y-y_city_coordinates)**2)+Constants.LAMBDA_LEVEL*(z)
 
     g_cities=np.sum(cities_cost)
 
