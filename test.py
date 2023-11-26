@@ -25,6 +25,9 @@ from Solver import solution, freestyle_solution
 import pickle
 import itertools
 
+# Additional imports
+import cProfile
+
 if __name__ == "__main__":
     n_tests = 3
     for i in range(n_tests):
@@ -44,13 +47,6 @@ if __name__ == "__main__":
         y = np.arange(0, Constants.N)
         x = np.arange(0, Constants.M)
         state_space = np.array(list(itertools.product(t, z, y, x)))
-
-        # print("In tester ----")
-        # print("t: ", Constants.T)
-        # print("z: ", Constants.D)
-        # print("y: ", Constants.N)
-        # print("x: ", Constants.M)
-        # print("Tester ----")
 
         # Begin tests
         K = len(state_space)
@@ -101,5 +97,9 @@ if __name__ == "__main__":
             passed = False
         else:
             print("[freestyle solution] Correct optimal cost")
+
+        cprofile_function_name = f'solution(P, G, {Constants.ALPHA})'
+        cprofile_file_name = 'optimization/output_file_' + str(i) + '.prof'
+        cProfile.run(cprofile_function_name, cprofile_file_name)
 
     print("-----------")
