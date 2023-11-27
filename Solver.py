@@ -66,6 +66,9 @@ def solution(P, G, alpha):
     x = np.arange(0, Constants.Constants.M)  
     state_space = np.array(list(itertools.product(t, z, y, x)))
 
+    # Implementing memoization, keeps copy of next states and action for given state
+    state_info_dict = {}
+
     delta_v = float('inf')
     epsilon = 1e-05
 
@@ -78,13 +81,17 @@ def solution(P, G, alpha):
         # profiler.enable()
         for i in range(K):
 
-            # profiler.enable()
-            next_states_list = generate_possible_next_states(state_space[i], state_space)
-            # profiler.disable()
+            next_states_list = []
+            possible_actions_list = []
 
-            # profiler.enable()
-            possible_actions_list = generate_possible_actions(state_space[i])
-            # profiler.disable()
+            if i not in state_info_dict: 
+                next_states_list = generate_possible_next_states(state_space[i], state_space)
+                possible_actions_list = generate_possible_actions(state_space[i])
+
+                state_info_dict[i] = [next_states_list, possible_actions_list]
+
+            next_states_list = state_info_dict[i][0]
+            possible_actions_list = state_info_dict[i][1]
 
             # profiler.enable()
             for action in possible_actions_list:

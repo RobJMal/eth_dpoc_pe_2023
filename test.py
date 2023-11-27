@@ -29,7 +29,7 @@ import itertools
 import cProfile
 
 if __name__ == "__main__":
-    n_tests = 1 # 3
+    n_tests = 3 # 3
     for i in range(n_tests):
         print("-----------")
         print("Test " + str(i))
