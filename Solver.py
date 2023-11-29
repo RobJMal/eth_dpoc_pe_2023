@@ -23,6 +23,9 @@ import numpy as np
 # Additional imports
 import itertools
 import Constants
+import cProfile
+
+profiler = cProfile.Profile()
 
 def solution(P, G, alpha):
     """Computes the optimal cost and the optimal control input for each 
@@ -49,7 +52,6 @@ def solution(P, G, alpha):
         np.array: The optimal control policy for the discounted stochastic SPP
 
     """
-
     K = G.shape[0]
 
     # J_opt = np.zeros(K)
@@ -64,6 +66,9 @@ def solution(P, G, alpha):
     x = np.arange(0, Constants.Constants.M)  
     state_space = np.array(list(itertools.product(t, z, y, x)))
 
+    # Implementing memoization, keeps copy of next states and action for given state
+    state_info_dict = {}
+
     delta_v = float('inf')
     epsilon = 1e-05
 
@@ -75,8 +80,17 @@ def solution(P, G, alpha):
 
         for i in range(K):
 
-            next_states_list = generate_possible_next_states(state_space[i], state_space)
-            possible_actions_list = generate_possible_actions(state_space[i])
+            next_states_list = []
+            possible_actions_list = []
+
+            if i not in state_info_dict: 
+                next_states_list = generate_possible_next_states(state_space[i], state_space)
+                possible_actions_list = generate_possible_actions(state_space[i])
+
+                state_info_dict[i] = [next_states_list, possible_actions_list]
+
+            next_states_list = state_info_dict[i][0]
+            possible_actions_list = state_info_dict[i][1]
 
             for action in possible_actions_list:
                 action_total = 0
@@ -91,7 +105,7 @@ def solution(P, G, alpha):
                 if value_action < J_copy[i]:
                     J_copy[i] = value_action
                     u_opt[i] = action
-
+                
         delta_v = np.max(np.abs(J_copy - J_opt))
         J_opt = J_copy
 
@@ -164,28 +178,31 @@ def generate_possible_next_states(current_state, state_space):
         x_west_j=x_i-1
     else:
         x_west_j=Constants.Constants.M-1
+    profiler.disable()
 
-    j_up=np.where((state_space == (t_j, z_up_j, y_i, x_i)).all(axis=1))[0][0]
-    j_stay=np.where((state_space == (t_j, z_i, y_i, x_i)).all(axis=1))[0][0]
-    j_down=np.where((state_space == (t_j, z_down_j, y_i, x_i)).all(axis=1))[0][0]
+    profiler.enable()
 
-    j_up_east=np.where((state_space == (t_j, z_up_j, y_i, x_east_j)).all(axis=1))[0][0]
-    j_up_west=np.where((state_space == (t_j, z_up_j, y_i, x_west_j)).all(axis=1))[0][0]
+    j_up = map_state_to_index((t_j, z_up_j, y_i, x_i))
+    j_stay=map_state_to_index((t_j, z_i, y_i, x_i))
+    j_down=map_state_to_index((t_j, z_down_j, y_i, x_i))
 
-    j_stay_east=np.where((state_space == (t_j, z_i, y_i, x_east_j)).all(axis=1))[0][0]
-    j_stay_west=np.where((state_space == (t_j, z_i, y_i, x_west_j)).all(axis=1))[0][0]
+    j_up_east=map_state_to_index((t_j, z_up_j, y_i, x_east_j))
+    j_up_west=map_state_to_index((t_j, z_up_j, y_i, x_west_j))
 
-    j_down_east=np.where((state_space == (t_j, z_down_j, y_i, x_east_j)).all(axis=1))[0][0]
-    j_down_west=np.where((state_space == (t_j, z_down_j, y_i, x_west_j)).all(axis=1))[0][0]
+    j_stay_east=map_state_to_index((t_j, z_i, y_i, x_east_j))
+    j_stay_west=map_state_to_index((t_j, z_i, y_i, x_west_j))
 
-    j_up_north=np.where((state_space == (t_j, z_up_j, y_north_j, x_i)).all(axis=1))[0][0]
-    j_up_south=np.where((state_space == (t_j, z_up_j, y_south_j, x_i)).all(axis=1))[0][0]
+    j_down_east=map_state_to_index((t_j, z_down_j, y_i, x_east_j))
+    j_down_west=map_state_to_index((t_j, z_down_j, y_i, x_west_j))
 
-    j_stay_north=np.where((state_space == (t_j, z_i, y_north_j, x_i)).all(axis=1))[0][0]
-    j_stay_south=np.where((state_space == (t_j, z_i, y_south_j, x_i)).all(axis=1))[0][0]
+    j_up_north=map_state_to_index((t_j, z_up_j, y_north_j, x_i))
+    j_up_south=map_state_to_index((t_j, z_up_j, y_south_j, x_i))
 
-    j_down_north=np.where((state_space == (t_j, z_down_j, y_north_j, x_i)).all(axis=1))[0][0]
-    j_down_south=np.where((state_space == (t_j, z_down_j, y_south_j, x_i)).all(axis=1))[0][0]
+    j_stay_north=map_state_to_index((t_j, z_i, y_north_j, x_i))
+    j_stay_south=map_state_to_index((t_j, z_i, y_south_j, x_i))
+
+    j_down_north=map_state_to_index((t_j, z_down_j, y_north_j, x_i))
+    j_down_south=map_state_to_index((t_j, z_down_j, y_south_j, x_i))
 
     if(z_i<(Constants.Constants.D-1) and z_i > 0):
         possible_next_states = [
@@ -246,8 +263,15 @@ def generate_possible_next_states(current_state, state_space):
             j_stay_south
         ]
 
-    # print("Error with generate_possible_next_states!!!")
     return list(set(possible_next_states))
+
+def map_state_to_index(input_state):
+    '''
+    Maps a state to the index in the P matrix 
+    '''
+    t_in, z_in, y_in, x_in = input_state[0], input_state[1], input_state[2], input_state[3]
+
+    return t_in*(Constants.Constants.D*Constants.Constants.N*Constants.Constants.M) + z_in*(Constants.Constants.N*Constants.Constants.M) + y_in*Constants.Constants.M + x_in
 
 def generate_possible_actions(current_state):
     '''
