@@ -191,27 +191,50 @@ def generate_possible_next_states(current_state, state_space):
     profiler.disable()
 
     profiler.enable()
-    j_up=np.where((state_space == (t_j, z_up_j, y_i, x_i)).all(axis=1))[0][0]
-    j_stay=np.where((state_space == (t_j, z_i, y_i, x_i)).all(axis=1))[0][0]
-    j_down=np.where((state_space == (t_j, z_down_j, y_i, x_i)).all(axis=1))[0][0]
 
-    j_up_east=np.where((state_space == (t_j, z_up_j, y_i, x_east_j)).all(axis=1))[0][0]
-    j_up_west=np.where((state_space == (t_j, z_up_j, y_i, x_west_j)).all(axis=1))[0][0]
+    j_up = map_state_to_index((t_j, z_up_j, y_i, x_i))
+    j_stay=map_state_to_index((t_j, z_i, y_i, x_i))
+    j_down=map_state_to_index((t_j, z_down_j, y_i, x_i))
 
-    j_stay_east=np.where((state_space == (t_j, z_i, y_i, x_east_j)).all(axis=1))[0][0]
-    j_stay_west=np.where((state_space == (t_j, z_i, y_i, x_west_j)).all(axis=1))[0][0]
+    j_up_east=map_state_to_index((t_j, z_up_j, y_i, x_east_j))
+    j_up_west=map_state_to_index((t_j, z_up_j, y_i, x_west_j))
 
-    j_down_east=np.where((state_space == (t_j, z_down_j, y_i, x_east_j)).all(axis=1))[0][0]
-    j_down_west=np.where((state_space == (t_j, z_down_j, y_i, x_west_j)).all(axis=1))[0][0]
+    j_stay_east=map_state_to_index((t_j, z_i, y_i, x_east_j))
+    j_stay_west=map_state_to_index((t_j, z_i, y_i, x_west_j))
 
-    j_up_north=np.where((state_space == (t_j, z_up_j, y_north_j, x_i)).all(axis=1))[0][0]
-    j_up_south=np.where((state_space == (t_j, z_up_j, y_south_j, x_i)).all(axis=1))[0][0]
+    j_down_east=map_state_to_index((t_j, z_down_j, y_i, x_east_j))
+    j_down_west=map_state_to_index((t_j, z_down_j, y_i, x_west_j))
 
-    j_stay_north=np.where((state_space == (t_j, z_i, y_north_j, x_i)).all(axis=1))[0][0]
-    j_stay_south=np.where((state_space == (t_j, z_i, y_south_j, x_i)).all(axis=1))[0][0]
+    j_up_north=map_state_to_index((t_j, z_up_j, y_north_j, x_i))
+    j_up_south=map_state_to_index((t_j, z_up_j, y_south_j, x_i))
 
-    j_down_north=np.where((state_space == (t_j, z_down_j, y_north_j, x_i)).all(axis=1))[0][0]
-    j_down_south=np.where((state_space == (t_j, z_down_j, y_south_j, x_i)).all(axis=1))[0][0]
+    j_stay_north=map_state_to_index((t_j, z_i, y_north_j, x_i))
+    j_stay_south=map_state_to_index((t_j, z_i, y_south_j, x_i))
+
+    j_down_north=map_state_to_index((t_j, z_down_j, y_north_j, x_i))
+    j_down_south=map_state_to_index((t_j, z_down_j, y_south_j, x_i))
+
+    # j_up=np.where((state_space == (t_j, z_up_j, y_i, x_i)).all(axis=1))[0][0]
+    # j_stay=np.where((state_space == (t_j, z_i, y_i, x_i)).all(axis=1))[0][0]
+    # j_down=np.where((state_space == (t_j, z_down_j, y_i, x_i)).all(axis=1))[0][0]
+
+    # j_up_east=np.where((state_space == (t_j, z_up_j, y_i, x_east_j)).all(axis=1))[0][0]
+    # j_up_west=np.where((state_space == (t_j, z_up_j, y_i, x_west_j)).all(axis=1))[0][0]
+
+    # j_stay_east=np.where((state_space == (t_j, z_i, y_i, x_east_j)).all(axis=1))[0][0]
+    # j_stay_west=np.where((state_space == (t_j, z_i, y_i, x_west_j)).all(axis=1))[0][0]
+
+    # j_down_east=np.where((state_space == (t_j, z_down_j, y_i, x_east_j)).all(axis=1))[0][0]
+    # j_down_west=np.where((state_space == (t_j, z_down_j, y_i, x_west_j)).all(axis=1))[0][0]
+
+    # j_up_north=np.where((state_space == (t_j, z_up_j, y_north_j, x_i)).all(axis=1))[0][0]
+    # j_up_south=np.where((state_space == (t_j, z_up_j, y_south_j, x_i)).all(axis=1))[0][0]
+
+    # j_stay_north=np.where((state_space == (t_j, z_i, y_north_j, x_i)).all(axis=1))[0][0]
+    # j_stay_south=np.where((state_space == (t_j, z_i, y_south_j, x_i)).all(axis=1))[0][0]
+
+    # j_down_north=np.where((state_space == (t_j, z_down_j, y_north_j, x_i)).all(axis=1))[0][0]
+    # j_down_south=np.where((state_space == (t_j, z_down_j, y_south_j, x_i)).all(axis=1))[0][0]
     profiler.disable()
 
     profiler.enable()
@@ -276,6 +299,14 @@ def generate_possible_next_states(current_state, state_space):
     profiler.disable()
 
     return list(set(possible_next_states))
+
+def map_state_to_index(input_state):
+    '''
+    Maps a state to the index in the P matrix 
+    '''
+    t_in, z_in, y_in, x_in = input_state[0], input_state[1], input_state[2], input_state[3]
+
+    return t_in*(Constants.Constants.D*Constants.Constants.N*Constants.Constants.M) + z_in*(Constants.Constants.N*Constants.Constants.M) + y_in*Constants.Constants.M + x_in
 
 def generate_possible_actions(current_state):
     '''
