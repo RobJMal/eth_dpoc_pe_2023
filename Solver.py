@@ -78,7 +78,6 @@ def solution(P, G, alpha):
         # Keeping a copy so algorithm references previous values while this maintains current ones
         J_copy = np.copy(J_opt)
 
-        # profiler.enable()
         for i in range(K):
 
             next_states_list = []
@@ -93,7 +92,6 @@ def solution(P, G, alpha):
             next_states_list = state_info_dict[i][0]
             possible_actions_list = state_info_dict[i][1]
 
-            # profiler.enable()
             for action in possible_actions_list:
                 action_total = 0
 
@@ -107,14 +105,9 @@ def solution(P, G, alpha):
                 if value_action < J_copy[i]:
                     J_copy[i] = value_action
                     u_opt[i] = action
-            # profiler.disable()
-        
-        # profiler.disable()
-        
+                
         delta_v = np.max(np.abs(J_copy - J_opt))
         J_opt = J_copy
-
-    profiler.dump_stats('optimization/solution_component_profile_0.prof')
 
     return J_opt, u_opt
 
@@ -149,11 +142,8 @@ def generate_possible_next_states(current_state, state_space):
     '''
     possible_next_states = []
 
-    profiler.enable()
     t_i, z_i, y_i, x_i = current_state[0], current_state[1], current_state[2], current_state[3]
-    profiler.disable()
 
-    profiler.enable()
     if(t_i<(Constants.Constants.T-1)):
         t_j=t_i+1
     else:
@@ -214,30 +204,6 @@ def generate_possible_next_states(current_state, state_space):
     j_down_north=map_state_to_index((t_j, z_down_j, y_north_j, x_i))
     j_down_south=map_state_to_index((t_j, z_down_j, y_south_j, x_i))
 
-    # j_up=np.where((state_space == (t_j, z_up_j, y_i, x_i)).all(axis=1))[0][0]
-    # j_stay=np.where((state_space == (t_j, z_i, y_i, x_i)).all(axis=1))[0][0]
-    # j_down=np.where((state_space == (t_j, z_down_j, y_i, x_i)).all(axis=1))[0][0]
-
-    # j_up_east=np.where((state_space == (t_j, z_up_j, y_i, x_east_j)).all(axis=1))[0][0]
-    # j_up_west=np.where((state_space == (t_j, z_up_j, y_i, x_west_j)).all(axis=1))[0][0]
-
-    # j_stay_east=np.where((state_space == (t_j, z_i, y_i, x_east_j)).all(axis=1))[0][0]
-    # j_stay_west=np.where((state_space == (t_j, z_i, y_i, x_west_j)).all(axis=1))[0][0]
-
-    # j_down_east=np.where((state_space == (t_j, z_down_j, y_i, x_east_j)).all(axis=1))[0][0]
-    # j_down_west=np.where((state_space == (t_j, z_down_j, y_i, x_west_j)).all(axis=1))[0][0]
-
-    # j_up_north=np.where((state_space == (t_j, z_up_j, y_north_j, x_i)).all(axis=1))[0][0]
-    # j_up_south=np.where((state_space == (t_j, z_up_j, y_south_j, x_i)).all(axis=1))[0][0]
-
-    # j_stay_north=np.where((state_space == (t_j, z_i, y_north_j, x_i)).all(axis=1))[0][0]
-    # j_stay_south=np.where((state_space == (t_j, z_i, y_south_j, x_i)).all(axis=1))[0][0]
-
-    # j_down_north=np.where((state_space == (t_j, z_down_j, y_north_j, x_i)).all(axis=1))[0][0]
-    # j_down_south=np.where((state_space == (t_j, z_down_j, y_south_j, x_i)).all(axis=1))[0][0]
-    profiler.disable()
-
-    profiler.enable()
     if(z_i<(Constants.Constants.D-1) and z_i > 0):
         possible_next_states = [
             j_up,
@@ -296,7 +262,6 @@ def generate_possible_next_states(current_state, state_space):
             j_stay_north,
             j_stay_south
         ]
-    profiler.disable()
 
     return list(set(possible_next_states))
 
