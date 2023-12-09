@@ -25,7 +25,7 @@ import itertools
 import Constants
 import cProfile
 
-profiler = cProfile.Profile()
+# profiler = cProfile.Profile()
 
 def solution(P, G, alpha):
     """Computes the optimal cost and the optimal control input for each 
@@ -70,7 +70,7 @@ def solution(P, G, alpha):
     state_info_dict = {}
 
     delta_v = float('inf')
-    epsilon = 1e-05
+    epsilon = 9e-05
 
     while delta_v > epsilon:
         delta_v = 0
@@ -110,6 +110,44 @@ def solution(P, G, alpha):
         J_opt = J_copy
 
     return J_opt, u_opt
+
+def solution_vectorized(P, G, alpha):
+    K = G.shape[0]
+    L=3
+
+    # J_opt = np.zeros(K)
+    J_opt = np.full(K, 1e03)    # Based on testing performance 
+    u_opt = np.zeros(K) 
+    t = np.arange(0, Constants.Constants.T)  
+    z = np.arange(0, Constants.Constants.D)  
+    y = np.arange(0, Constants.Constants.N)  
+    x = np.arange(0, Constants.Constants.M)  
+      
+    state_space = np.array(list(itertools.product(t, z, y, x)))
+
+    # Convergence parameters
+    epsilon = 1e-05
+    delta_v = float('inf')
+
+    while delta_v > epsilon:
+        J_copy = np.copy(J_opt)
+
+        # Vectorized computation for each action
+        for action in range(L):
+            # Compute the total cost for this action across all states
+            total_cost_action = G[:, action] + alpha * np.sum(P[:, :, action] * J_opt, axis=1)
+
+            # Update the optimal cost and policy
+            better_cost = total_cost_action < J_copy
+            J_copy[better_cost] = total_cost_action[better_cost]
+            u_opt[better_cost] = action
+
+        # Check for convergence
+        delta_v = np.max(np.abs(J_copy - J_opt))
+        J_opt = J_copy
+
+    return J_opt, u_opt
+
 
 def freestyle_solution(Constants):
     """Computes the optimal cost and the optimal control input for each 
@@ -178,9 +216,6 @@ def generate_possible_next_states(current_state, state_space):
         x_west_j=x_i-1
     else:
         x_west_j=Constants.Constants.M-1
-    profiler.disable()
-
-    profiler.enable()
 
     j_up = map_state_to_index((t_j, z_up_j, y_i, x_i))
     j_stay=map_state_to_index((t_j, z_i, y_i, x_i))
