@@ -98,9 +98,9 @@ if __name__ == "__main__":
         else:
             print("[freestyle solution] Correct optimal cost")
 
-        # # Checking time for optimization
-        # cprofile_function_name = f'solution(P, G, {Constants.ALPHA})'
-        # cprofile_file_name = 'optimization/output_file_' + str(i) + '.prof'
-        # cProfile.run(cprofile_function_name, cprofile_file_name)
+        # Checking time for optimization
+        cprofile_function_name = f'compute_transition_probabilities(Constants)'
+        cprofile_file_name = 'optimization/compute_trans_prob_output_file_' + str(i) + '.prof'
+        cProfile.run(cprofile_function_name, cprofile_file_name)
 
     print("-----------")
