@@ -19,7 +19,7 @@
 
 import numpy as np
 from ComputeStageCosts import compute_stage_cost
-from ComputeTransitionProbabilities import compute_transition_probabilities
+from ComputeTransitionProbabilities import compute_transition_probabilities, compute_transition_probabilities_sparse, coo_to_3d
 from Constants import Constants
 from Solver import solution, freestyle_solution
 import pickle
@@ -50,7 +50,8 @@ if __name__ == "__main__":
 
         # Begin tests
         K = len(state_space)
-        P = compute_transition_probabilities(Constants)
+        P = compute_transition_probabilities_sparse(Constants)
+        P = coo_to_3d(P, K, 3)  # Converting format to dense to accurately check trans prob matrix
         if not np.all(
             np.logical_or(np.isclose(P.sum(axis=1), 1), np.isclose(P.sum(axis=1), 0))
         ):
@@ -66,7 +67,7 @@ if __name__ == "__main__":
             # for index in zip(*non_zero_indices):
             #     print(f"P{index} = {P2[index]}")
             print("Wrong transition probabilities")
-            # print(P[443,38,1])
+            # print(P[474,99,2])
             passed = False
         else:
             print("Correct transition probabilities")

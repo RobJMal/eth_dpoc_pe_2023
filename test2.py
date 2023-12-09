@@ -19,7 +19,7 @@
 
 import numpy as np
 from ComputeStageCosts import compute_stage_cost
-from ComputeTransitionProbabilities import compute_transition_probabilities
+from ComputeTransitionProbabilities import compute_transition_probabilities, compute_transition_probabilities_sparse, coo_to_3d
 from Constants import Constants
 from Solver import solution, freestyle_solution
 import pickle
@@ -54,10 +54,11 @@ if __name__ == "__main__":
         # Begin tests
         K = len(state_space)
         tracemalloc.start()
-        P = compute_transition_probabilities(Constants)
+        P = compute_transition_probabilities_sparse(Constants)
         current,peak=tracemalloc.get_traced_memory()
         tracemalloc.stop()
         print(peak/2**20)
+        P = coo_to_3d(P, K, 3)  # Converting format to dense to accurately check trans prob matrix
 
         if not np.all(
             np.logical_or(np.isclose(P.sum(axis=1), 1), np.isclose(P.sum(axis=1), 0))
@@ -93,14 +94,14 @@ if __name__ == "__main__":
 
         # normal solution
         
-        [J_opt, u_opt] = solution(P, G, Constants.ALPHA)
+        # [J_opt, u_opt] = solution(P, G, Constants.ALPHA)
 
      
-        if False:#not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
-            print("[guided solution] Wrong optimal cost")
-            passed = False
-        else:
-            print("[guided solution] Correct optimal cost")
+        # if False:#not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
+        #     print("[guided solution] Wrong optimal cost")
+        #     passed = False
+        # else:
+        #     print("[guided solution] Correct optimal cost")
 
         # # freestyle solution
         # tracemalloc.start()
@@ -115,8 +116,8 @@ if __name__ == "__main__":
         #     print("[freestyle solution] Correct optimal cost")
 
         # Checking time for optimization
-        cprofile_function_name = f'compute_transition_probabilities(Constants)'
-        cprofile_file_name = 'optimization/max_test_output_file_' + str(i) + '.prof'
+        cprofile_function_name = f'solution(P, G, Constants.ALPHA)'
+        cprofile_file_name = 'optimization/vectorized_vi_output_file_' + str(i) + '.prof'
         cProfile.run(cprofile_function_name, cprofile_file_name)
 
     print("-----------")
