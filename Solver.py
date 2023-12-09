@@ -111,42 +111,42 @@ def solution(P, G, alpha):
 
     return J_opt, u_opt
 
-# def solution(P, G, alpha):
-#     K = G.shape[0]
-#     L=3
+def solution_vectorized(P, G, alpha):
+    K = G.shape[0]
+    L=3
 
-#     # J_opt = np.zeros(K)
-#     J_opt = np.full(K, 1e03)    # Based on testing performance 
-#     u_opt = np.zeros(K) 
-#     t = np.arange(0, Constants.Constants.T)  
-#     z = np.arange(0, Constants.Constants.D)  
-#     y = np.arange(0, Constants.Constants.N)  
-#     x = np.arange(0, Constants.Constants.M)  
+    # J_opt = np.zeros(K)
+    J_opt = np.full(K, 1e03)    # Based on testing performance 
+    u_opt = np.zeros(K) 
+    t = np.arange(0, Constants.Constants.T)  
+    z = np.arange(0, Constants.Constants.D)  
+    y = np.arange(0, Constants.Constants.N)  
+    x = np.arange(0, Constants.Constants.M)  
       
-#     state_space = np.array(list(itertools.product(t, z, y, x)))
+    state_space = np.array(list(itertools.product(t, z, y, x)))
 
-#     # Convergence parameters
-#     epsilon = 1e-05
-#     delta_v = float('inf')
+    # Convergence parameters
+    epsilon = 1e-05
+    delta_v = float('inf')
 
-#     while delta_v > epsilon:
-#         J_copy = np.copy(J_opt)
+    while delta_v > epsilon:
+        J_copy = np.copy(J_opt)
 
-#         # Vectorized computation for each action
-#         for action in range(L):
-#             # Compute the total cost for this action across all states
-#             total_cost_action = G[:, action] + alpha * np.sum(P[:, :, action] * J_opt, axis=1)
+        # Vectorized computation for each action
+        for action in range(L):
+            # Compute the total cost for this action across all states
+            total_cost_action = G[:, action] + alpha * np.sum(P[:, :, action] * J_opt, axis=1)
 
-#             # Update the optimal cost and policy
-#             better_cost = total_cost_action < J_copy
-#             J_copy[better_cost] = total_cost_action[better_cost]
-#             u_opt[better_cost] = action
+            # Update the optimal cost and policy
+            better_cost = total_cost_action < J_copy
+            J_copy[better_cost] = total_cost_action[better_cost]
+            u_opt[better_cost] = action
 
-#         # Check for convergence
-#         delta_v = np.max(np.abs(J_copy - J_opt))
-#         J_opt = J_copy
+        # Check for convergence
+        delta_v = np.max(np.abs(J_copy - J_opt))
+        J_opt = J_copy
 
-#     return J_opt, u_opt
+    return J_opt, u_opt
 
 
 def freestyle_solution(Constants):
