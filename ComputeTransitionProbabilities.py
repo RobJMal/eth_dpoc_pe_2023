@@ -49,13 +49,7 @@ def compute_transition_probabilities(Constants):
     input_space = np.array([Constants.V_DOWN, Constants.V_STAY, Constants.V_UP])
     L = len(input_space)
 
-    # P = np.zeros((K, K, L))
-
-    # Initialize lists for COO format
-    rows = []
-    cols = []
-    data = []
-
+    P = np.zeros((K, K, L))
     for i in range (K):
         t_i=state_space[i][0]
         z_i=state_space[i][1]
@@ -127,239 +121,82 @@ def compute_transition_probabilities(Constants):
         if y_i == 0:
             y_south_limit = 1
 
-        # Constants.V_DOWN
-        if z_i == 0: 
-            dummy_var = 0 
-            # P[i,j_up,Constants.V_DOWN]=0
-            # P[i,j_stay,Constants.V_DOWN]=0
-            # P[i,j_down,Constants.V_DOWN]=0
+        # ----- Constants.V_DOWN -----
+        if z_i > 0: 
+            P[i,j_stay,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
+            P[i,j_down,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
 
-            # P[i,j_up_east,Constants.V_DOWN]=0
-            # P[i,j_up_west,Constants.V_DOWN]=0
+            P[i,j_stay_east,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
+            P[i,j_stay_west,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
 
-            # P[i,j_stay_east,Constants.V_DOWN]=0
-            # P[i,j_stay_west,Constants.V_DOWN]=0
+            P[i,j_down_east,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
+            P[i,j_down_west,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
 
-            # P[i,j_down_east,Constants.V_DOWN]=0
-            # P[i,j_down_west,Constants.V_DOWN]=0
+            P[i, j_stay_north,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
+            P[i,j_stay_south,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
 
-            # P[i,j_up_north,Constants.V_DOWN]=0
-            # P[i,j_up_south,Constants.V_DOWN]=0
-
-            # P[i, j_stay_north,Constants.V_DOWN]=0
-            # P[i,j_stay_south,Constants.V_DOWN]=0
-
-            # P[i,j_down_north,Constants.V_DOWN]=0
-            # P[i,J_down_south,Constants.V_DOWN]=0
-        else: 
-            # P[i,j_up,Constants.V_DOWN]=0
-            # P[i,j_stay,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
-            # P[i,j_down,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
-            p_value_j_stay = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
-            p_value_j_down = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
-            add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_DOWN, p_value_j_stay, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_down, Constants.V_DOWN, p_value_j_down, L)
-
-            # P[i,j_up_east,Constants.V_DOWN]=0
-            # P[i,j_up_west,Constants.V_DOWN]=0
-
-            # P[i,j_stay_east,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
-            # P[i,j_stay_west,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
-            p_value_j_stay_east = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
-            p_value_j_stay_west = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
-            add_to_sparse_matrix(rows, cols, data, i, j_stay_east, Constants.V_DOWN, p_value_j_stay_east, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_stay_west, Constants.V_DOWN, p_value_j_stay_west, L)
-
-            # P[i,j_down_east,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
-            # P[i,j_down_west,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
-            p_value_j_down_east = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
-            p_value_j_down_west = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
-            add_to_sparse_matrix(rows, cols, data, i, j_down_east, Constants.V_DOWN, p_value_j_down_east, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_down_west, Constants.V_DOWN, p_value_j_down_west, L)
-
-            # P[i,j_up_north,Constants.V_DOWN]=0
-            # P[i,j_up_south,Constants.V_DOWN]=0
-
-            # P[i, j_stay_north,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
-            # P[i,j_stay_south,Constants.V_DOWN]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
-            p_value_j_stay_north = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
-            p_value_j_stay_south = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
-            add_to_sparse_matrix(rows, cols, data, i, j_stay_north, Constants.V_DOWN, p_value_j_stay_north, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_stay_south, Constants.V_DOWN, p_value_j_stay_south, L)
-
-            # P[i,j_down_north,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
-            # P[i,J_down_south,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
-            p_value_j_down_north = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
-            p_value_j_down_south = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
-            add_to_sparse_matrix(rows, cols, data, i, j_down_north, Constants.V_DOWN, p_value_j_down_north, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_down_south, Constants.V_DOWN, p_value_j_down_south, L)
-
+            P[i,j_down_north,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
+            P[i,j_down_south,Constants.V_DOWN]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
 
             if y_north_limit:   # If north limit, akin to staying 
-                # P[i,j_stay,Constants.V_DOWN]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
-                #                               Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
-                # P[i,j_down,Constants.V_DOWN]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
-                #                               Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
-                p_value_j_stay = (Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
-                                    Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
-                p_value_j_down = (Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
-                                    Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
-                add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_DOWN, p_value_j_stay, L)
-                add_to_sparse_matrix(rows, cols, data, i, j_down, Constants.V_DOWN, p_value_j_down, L)
+                P[i,j_stay,Constants.V_DOWN]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
+                                              Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
+                P[i,j_down,Constants.V_DOWN]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
+                                              Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
 
             elif y_south_limit:   # If north limit, akin to staying 
-                # P[i,j_stay,Constants.V_DOWN]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
-                #                               Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
-                # P[i,j_down,Constants.V_DOWN]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
-                #                               Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
-                p_value_j_stay = (Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
-                                    Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
-                p_value_j_down = (Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
-                                    Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
-                add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_DOWN, p_value_j_stay, L)
-                add_to_sparse_matrix(rows, cols, data, i, j_down, Constants.V_DOWN, p_value_j_down, L)
+                P[i,j_stay,Constants.V_DOWN]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
+                                              Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
+                P[i,j_down,Constants.V_DOWN]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
+                                              Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
 
         # ----- Constants.V_STAY (always possible) -----
-        # P[i,j_down_north,Constants.V_STAY]=0
-        # P[i,J_down_south,Constants.V_STAY]=0
-        # P[i,j_up,Constants.V_STAY]=0
-        # P[i,j_up_north,Constants.V_STAY]=0
-        # P[i,j_up_south,Constants.V_STAY]=0
-        # P[i,j_down_east,Constants.V_STAY]=0
-        # P[i,j_down_west,Constants.V_STAY]=0
-        # P[i,j_down,Constants.V_STAY]=0
-
-        # P[i,j_up_east,Constants.V_STAY]=0
-        # P[i,j_up_west,Constants.V_STAY]=0
-
-        # P[i,j_stay,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
-        p_value_j_stay = Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
-        add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_STAY, p_value_j_stay, L)
+        P[i,j_stay,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
        
-        # P[i,j_stay_east,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
-        # P[i,j_stay_west,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
-        p_value_j_stay_east = Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
-        p_value_j_stay_west = Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
-        add_to_sparse_matrix(rows, cols, data, i, j_stay_east, Constants.V_STAY, p_value_j_stay_east, L)
-        add_to_sparse_matrix(rows, cols, data, i, j_stay_west, Constants.V_STAY, p_value_j_stay_west, L)
+        P[i,j_stay_east,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
+        P[i,j_stay_west,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
 
-        # P[i, j_stay_north,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
-        # P[i,j_stay_south,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
-        p_value_j_stay_north = Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
-        p_value_j_stay_south = Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
-        add_to_sparse_matrix(rows, cols, data, i, j_stay_north, Constants.V_STAY, p_value_j_stay_north, L)
-        add_to_sparse_matrix(rows, cols, data, i, j_stay_south, Constants.V_STAY, p_value_j_stay_south, L)
+        P[i, j_stay_north,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
+        P[i,j_stay_south,Constants.V_STAY]=Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
 
         if y_north_limit:   # If north limit, akin to staying 
-            # P[i,j_stay,Constants.V_STAY]=(Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
-            #                                   Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
-            p_value_j_stay = (Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
-                                Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
-            add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_STAY, p_value_j_stay, L)
+            P[i,j_stay,Constants.V_STAY]=(Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
+                                              Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
 
         elif y_south_limit:   # If north limit, akin to staying 
-            # P[i,j_stay,Constants.V_STAY]=(Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
-            #                                 Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
-            p_value_j_stay = (Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
-                                Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
-            add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_STAY, p_value_j_stay, L)
+            P[i,j_stay,Constants.V_STAY]=(Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
+                                            Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
 
         # ----- Constants.V_UP -----
-        if (z_i == (Constants.D - 1)):
-            dummy_var = 1
-            # P[i,j_up,Constants.V_UP]=0
-            # P[i,j_stay,Constants.V_UP]=0
-            # P[i,j_down,Constants.V_UP]=0
-
-            # P[i,j_up_east,Constants.V_UP]=0
-            # P[i,j_up_west,Constants.V_UP]=0
-
-            # P[i,j_stay_east,Constants.V_UP]=0
-            # P[i,j_stay_west,Constants.V_UP]=0
-
-            # P[i,j_down_east,Constants.V_UP]=0
-            # P[i,j_down_west,Constants.V_UP]=0
-
-            # P[i,j_up_north,Constants.V_UP]=0
-            # P[i,j_up_south,Constants.V_UP]=0
-
-            # P[i, j_stay_north,Constants.V_UP]=0
-            # P[i,j_stay_south,Constants.V_UP]=0
-
-            # P[i,j_down_north,Constants.V_UP]=0
-            # P[i,J_down_south,Constants.V_UP]=0
-        else:
-            # P[i,j_down_east,Constants.V_UP]=0
-            # P[i,j_down_west,Constants.V_UP]=0
-            # P[i,j_down,Constants.V_UP]=0
-            # P[i,j_down_north,Constants.V_UP]=0
+        if (z_i < (Constants.D - 1)):
+            P[i,j_up,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
+            P[i,j_stay,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
             
-            # P[i,J_down_south,Constants.V_UP]=0
+            P[i,j_up_east,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
+            P[i,j_up_west,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
 
-            # P[i,j_up,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
-            # P[i,j_stay,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
-            p_value_j_up = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
-            p_value_j_stay = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
-            add_to_sparse_matrix(rows, cols, data, i, j_up, Constants.V_UP, p_value_j_up, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_UP, p_value_j_stay, L)
-            
-            # P[i,j_up_east,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
-            # P[i,j_up_west,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
-            p_value_j_up_east = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
-            p_value_j_up_west = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
-            add_to_sparse_matrix(rows, cols, data, i, j_up_east, Constants.V_UP, p_value_j_up_east, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_up_west, Constants.V_UP, p_value_j_up_west, L)
+            P[i,j_stay_east,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
+            P[i,j_stay_west,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
 
-            # P[i,j_stay_east,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
-            # P[i,j_stay_west,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
-            p_value_j_stay_east = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
-            p_value_j_stay_west = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
-            add_to_sparse_matrix(rows, cols, data, i, j_stay_east, Constants.V_UP, p_value_j_stay_east, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_stay_west, Constants.V_UP, p_value_j_stay_west, L)
+            P[i,j_up_north,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
+            P[i,j_up_south,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
 
-            # P[i,j_up_north,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
-            # P[i,j_up_south,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
-            p_value_j_up_north = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
-            p_value_j_up_south = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
-            add_to_sparse_matrix(rows, cols, data, i, j_up_north, Constants.V_UP, p_value_j_up_north, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_up_south, Constants.V_UP, p_value_j_up_south, L)
-
-            # P[i, j_stay_north,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
-            # P[i,j_stay_south,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
-            p_value_j_stay_north = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
-            p_value_j_stay_south = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
-            add_to_sparse_matrix(rows, cols, data, i, j_stay_north, Constants.V_UP, p_value_j_stay_north, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_stay_south, Constants.V_UP, p_value_j_stay_south, L)
+            P[i, j_stay_north,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
+            P[i,j_stay_south,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
 
             if y_north_limit:   # If north limit, akin to staying 
-                # P[i,j_stay,Constants.V_UP]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
-                #                               Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
-                # P[i,j_up,Constants.V_UP]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
-                #                               Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
-                p_value_j_stay = (Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
-                                    Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
-                p_value_j_up = (Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
-                                    Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
-                add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_UP, p_value_j_stay, L)
-                add_to_sparse_matrix(rows, cols, data, i, j_up, Constants.V_UP, p_value_j_up, L)
+                P[i,j_stay,Constants.V_UP]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
+                                              Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
+                P[i,j_up,Constants.V_UP]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
+                                              Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
                 
             elif y_south_limit:   # If north limit, akin to staying 
-                # P[i,j_stay,Constants.V_UP]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
-                #                               Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
-                # P[i,j_up,Constants.V_UP]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
-                #                               Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
-                p_value_j_stay = (Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
-                                    Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
-                p_value_j_up = (Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
-                                    Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
-                add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_UP, p_value_j_stay, L)
-                add_to_sparse_matrix(rows, cols, data, i, j_up, Constants.V_UP, p_value_j_up, L)
+                P[i,j_stay,Constants.V_UP]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
+                                              Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
+                P[i,j_up,Constants.V_UP]=(Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
+                                              Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
 
-    P_sparse = coo_matrix((data, (rows, cols)), shape=(K*L, K))
-
-    # P = coo_to_3d(P_sparse, K, L)
-
-    return P_sparse
+    return P
 
 def compute_transition_probabilities_sparse(Constants):
     """Computes the transition probability matrix P.
