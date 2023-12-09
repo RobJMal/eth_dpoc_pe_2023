@@ -21,12 +21,13 @@ import numpy as np
 from ComputeStageCosts import compute_stage_cost
 from ComputeTransitionProbabilities import compute_transition_probabilities, compute_transition_probabilities_sparse, coo_to_3d
 from Constants import Constants
-from Solver import solution, freestyle_solution
+from Solver import solution, freestyle_solution, solution_vectorized
 import pickle
 import itertools
 
 # Additional imports
 import cProfile
+import time 
 
 if __name__ == "__main__":
     n_tests = 3 # 3
@@ -50,8 +51,8 @@ if __name__ == "__main__":
 
         # Begin tests
         K = len(state_space)
-        P = compute_transition_probabilities_sparse(Constants)
-        P = coo_to_3d(P, K, 3)  # Converting format to dense to accurately check trans prob matrix
+        P = compute_transition_probabilities(Constants)
+        # P = coo_to_3d(compute_transition_probabilities_sparse(Constants), K, 3)
         if not np.all(
             np.logical_or(np.isclose(P.sum(axis=1), 1), np.isclose(P.sum(axis=1), 0))
         ):
@@ -84,12 +85,27 @@ if __name__ == "__main__":
             print("Correct stage costs")
 
         # normal solution
+        start_time = time.time()
         [J_opt, u_opt] = solution(P, G, Constants.ALPHA)
+        end_time = time.time()
         if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
             print("[guided solution] Wrong optimal cost")
             passed = False
         else:
             print("[guided solution] Correct optimal cost")
+        print(f"VI non-vectorized took {end_time - start_time} seconds to run.")
+        print()
+
+        # Vectorized solution 
+        start_time = time.time()
+        [J_opt, u_opt] = solution_vectorized(P, G, Constants.ALPHA)
+        end_time = time.time()
+        if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
+            print("[guided solution] Wrong optimal cost")
+            passed = False
+        else:
+            print("[guided solution] Correct optimal cost")
+        print(f"VI vectorized took {end_time - start_time} seconds to run.")
 
         # freestyle solution
         [J_opt, u_opt] = freestyle_solution(Constants)
@@ -100,8 +116,8 @@ if __name__ == "__main__":
             print("[freestyle solution] Correct optimal cost")
 
         # Checking time for optimization
-        cprofile_function_name = f'compute_transition_probabilities(Constants)'
-        cprofile_file_name = 'optimization/compute_trans_prob_output_file_' + str(i) + '.prof'
-        cProfile.run(cprofile_function_name, cprofile_file_name)
+        # cprofile_function_name = f'compute_transition_probabilities(Constants)'
+        # cprofile_file_name = 'optimization/compute_trans_prob_output_file_' + str(i) + '.prof'
+        # cProfile.run(cprofile_function_name, cprofile_file_name)
 
     print("-----------")

@@ -21,13 +21,14 @@ import numpy as np
 from ComputeStageCosts import compute_stage_cost
 from ComputeTransitionProbabilities import compute_transition_probabilities, compute_transition_probabilities_sparse, coo_to_3d
 from Constants import Constants
-from Solver import solution, freestyle_solution
+from Solver import solution, freestyle_solution, solution_vectorized
 import pickle
 import itertools
 import tracemalloc
 
 # Additional imports
 import cProfile
+import time
 
 if __name__ == "__main__":
     n_tests = 1 # 3
@@ -53,12 +54,18 @@ if __name__ == "__main__":
 
         # Begin tests
         K = len(state_space)
-        tracemalloc.start()
-        P = compute_transition_probabilities_sparse(Constants)
-        current,peak=tracemalloc.get_traced_memory()
-        tracemalloc.stop()
-        print(peak/2**20)
-        P = coo_to_3d(P, K, 3)  # Converting format to dense to accurately check trans prob matrix
+        # tracemalloc.start()
+        # start_time = time.time()
+        # P = compute_transition_probabilities_sparse(Constants)
+        # end_time = time.time()
+        # print(f"CTP_Sparse took {end_time - start_time} seconds to run.")
+        # print()
+
+        start_time = time.time()
+        P = compute_transition_probabilities(Constants)  # Converting format to dense to accurately check trans prob matrix
+        end_time = time.time()
+        print(f"CTP took {end_time - start_time} seconds to run.")
+        print()
 
         if not np.all(
             np.logical_or(np.isclose(P.sum(axis=1), 1), np.isclose(P.sum(axis=1), 0))
@@ -93,8 +100,28 @@ if __name__ == "__main__":
             print("Correct stage costs")
 
         # normal solution
+        # normal solution
+        start_time = time.time()
+        [J_opt, u_opt] = solution(P, G, Constants.ALPHA)
+        end_time = time.time()
+        # if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
+        #     print("[guided solution] Wrong optimal cost")
+        #     passed = False
+        # else:
+        #     print("[guided solution] Correct optimal cost")
+        print(f"VI non-vectorized took {end_time - start_time} seconds to run.")
+        print()
         
-        # [J_opt, u_opt] = solution(P, G, Constants.ALPHA)
+        # Vectorized solution 
+        start_time = time.time()
+        [J_opt, u_opt] = solution_vectorized(P, G, Constants.ALPHA)
+        end_time = time.time()
+        # if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
+        #     print("[guided solution] Wrong optimal cost")
+        #     passed = False
+        # else:
+        #     print("[guided solution] Correct optimal cost")
+        print(f"VI vectorized took {end_time - start_time} seconds to run.")
 
      
         # if False:#not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
