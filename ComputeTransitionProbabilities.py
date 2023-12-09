@@ -579,9 +579,7 @@ def compute_transition_probabilities_sparse(Constants):
 
     P_sparse = coo_matrix((data, (rows, cols)), shape=(K*L, K))
 
-    P = coo_to_3d(P_sparse, K, L)
-
-    return P
+    return P_sparse
 
 def print_state(state_name, i, state_space):
     t_i=state_space[i][0]
