@@ -299,10 +299,8 @@ def compute_transition_probabilities_sparse(Constants):
         if y_i == 0:
             y_south_limit = 1
 
-        # Constants.V_DOWN
-        if z_i == 0: 
-            dummy_var = 0 
-        else: 
+        # ----- Constants.V_DOWN -----
+        if z_i > 0: 
             p_value_j_stay = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
             p_value_j_down = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
             add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_DOWN, p_value_j_stay, L)
@@ -327,7 +325,6 @@ def compute_transition_probabilities_sparse(Constants):
             p_value_j_down_south = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
             add_to_sparse_matrix(rows, cols, data, i, j_down_north, Constants.V_DOWN, p_value_j_down_north, L)
             add_to_sparse_matrix(rows, cols, data, i, j_down_south, Constants.V_DOWN, p_value_j_down_south, L)
-
 
             if y_north_limit:   # If north limit, akin to staying 
                 p_value_j_stay = (Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
@@ -370,9 +367,7 @@ def compute_transition_probabilities_sparse(Constants):
             add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_STAY, p_value_j_stay, L)
 
         # ----- Constants.V_UP -----
-        if (z_i == (Constants.D - 1)):
-            dummy_var = 1
-        else:
+        if (z_i < (Constants.D - 1)):
             p_value_j_up = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
             p_value_j_stay = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
             add_to_sparse_matrix(rows, cols, data, i, j_up, Constants.V_UP, p_value_j_up, L)
