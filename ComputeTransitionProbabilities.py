@@ -129,6 +129,7 @@ def compute_transition_probabilities(Constants):
 
         # Constants.V_DOWN
         if z_i == 0: 
+            dummy_var = 0 
             # P[i,j_up,Constants.V_DOWN]=0
             # P[i,j_stay,Constants.V_DOWN]=0
             # P[i,j_down,Constants.V_DOWN]=0
@@ -263,8 +264,9 @@ def compute_transition_probabilities(Constants):
                                 Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
             add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_STAY, p_value_j_stay, L)
 
-        # Constants.V_UP
+        # ----- Constants.V_UP -----
         if (z_i == (Constants.D - 1)):
+            dummy_var = 1
             # P[i,j_up,Constants.V_UP]=0
             # P[i,j_stay,Constants.V_UP]=0
             # P[i,j_down,Constants.V_UP]=0
@@ -298,36 +300,36 @@ def compute_transition_probabilities(Constants):
             # P[i,j_stay,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
             p_value_j_up = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
             p_value_j_stay = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]
-            add_to_sparse_matrix(rows, cols, data, i, j_up, Constants.V_STAY, p_value_j_up, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_STAY, p_value_j_stay, L)
+            add_to_sparse_matrix(rows, cols, data, i, j_up, Constants.V_UP, p_value_j_up, L)
+            add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_UP, p_value_j_stay, L)
             
             # P[i,j_up_east,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
             # P[i,j_up_west,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
             p_value_j_up_east = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
             p_value_j_up_west = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
-            add_to_sparse_matrix(rows, cols, data, i, j_up_east, Constants.V_STAY, p_value_j_up_east, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_up_west, Constants.V_STAY, p_value_j_up_west, L)
+            add_to_sparse_matrix(rows, cols, data, i, j_up_east, Constants.V_UP, p_value_j_up_east, L)
+            add_to_sparse_matrix(rows, cols, data, i, j_up_west, Constants.V_UP, p_value_j_up_west, L)
 
             # P[i,j_stay_east,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
             # P[i,j_stay_west,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
             p_value_j_stay_east = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_EAST]
             p_value_j_stay_west = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_WEST]
-            add_to_sparse_matrix(rows, cols, data, i, j_stay_east, Constants.V_STAY, p_value_j_stay_east, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_stay_west, Constants.V_STAY, p_value_j_stay_west, L)
+            add_to_sparse_matrix(rows, cols, data, i, j_stay_east, Constants.V_UP, p_value_j_stay_east, L)
+            add_to_sparse_matrix(rows, cols, data, i, j_stay_west, Constants.V_UP, p_value_j_stay_west, L)
 
             # P[i,j_up_north,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
             # P[i,j_up_south,Constants.V_UP]=Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
             p_value_j_up_north = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
             p_value_j_up_south = Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
-            add_to_sparse_matrix(rows, cols, data, i, j_up_north, Constants.V_STAY, p_value_j_up_north, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_up_south, Constants.V_STAY, p_value_j_up_south, L)
+            add_to_sparse_matrix(rows, cols, data, i, j_up_north, Constants.V_UP, p_value_j_up_north, L)
+            add_to_sparse_matrix(rows, cols, data, i, j_up_south, Constants.V_UP, p_value_j_up_south, L)
 
             # P[i, j_stay_north,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
             # P[i,j_stay_south,Constants.V_UP]=Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
             p_value_j_stay_north = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH]
             p_value_j_stay_south = Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH]
-            add_to_sparse_matrix(rows, cols, data, i, j_stay_north, Constants.V_STAY, p_value_j_stay_north, L)
-            add_to_sparse_matrix(rows, cols, data, i, j_stay_south, Constants.V_STAY, p_value_j_stay_south, L)
+            add_to_sparse_matrix(rows, cols, data, i, j_stay_north, Constants.V_UP, p_value_j_stay_north, L)
+            add_to_sparse_matrix(rows, cols, data, i, j_stay_south, Constants.V_UP, p_value_j_stay_south, L)
 
             if y_north_limit:   # If north limit, akin to staying 
                 # P[i,j_stay,Constants.V_UP]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
@@ -338,8 +340,8 @@ def compute_transition_probabilities(Constants):
                                     Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
                 p_value_j_up = (Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
                                     Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_NORTH])
-                add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_STAY, p_value_j_stay, L)
-                add_to_sparse_matrix(rows, cols, data, i, j_up, Constants.V_STAY, p_value_j_up, L)
+                add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_UP, p_value_j_stay, L)
+                add_to_sparse_matrix(rows, cols, data, i, j_up, Constants.V_UP, p_value_j_up, L)
                 
             elif y_south_limit:   # If north limit, akin to staying 
                 # P[i,j_stay,Constants.V_UP]=(Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY] +
@@ -350,9 +352,12 @@ def compute_transition_probabilities(Constants):
                                     Constants.P_V_TRANSITION[0]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
                 p_value_j_up = (Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_STAY]+
                                     Constants.P_V_TRANSITION[1]*Constants.P_H_TRANSITION[z_i].P_WIND[Constants.H_SOUTH])
-                add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_STAY, p_value_j_stay, L)
-                add_to_sparse_matrix(rows, cols, data, i, j_up, Constants.V_STAY, p_value_j_up, L)
-                
+                add_to_sparse_matrix(rows, cols, data, i, j_stay, Constants.V_UP, p_value_j_stay, L)
+                add_to_sparse_matrix(rows, cols, data, i, j_up, Constants.V_UP, p_value_j_up, L)
+
+    P_sparse = coo_matrix((data, (rows, cols)), shape=(K*L, K))
+
+    P = coo_to_3d(P_sparse, K, L)
 
     return P
 
@@ -397,9 +402,29 @@ def add_to_sparse_matrix(rows, cols, data, i, j, l, value, L):
     L (int): Total number of actions.
 
     """
-    if value != 0:
+    if value != 0.0:
         row_index = i * L + l
         rows.append(row_index)
         cols.append(j)
         data.append(value)
 
+def coo_to_3d(P_sparse, K, L):
+    """
+    Converts a COO sparse matrix to a 3D numpy array.
+
+    Args:
+    P_sparse (coo_matrix): The COO sparse matrix to be converted.
+    K (int): Size of the state space.
+    L (int): Size of the action space.
+
+    Returns:
+    np.array: A 3D numpy array with shape (K, K, L).
+    """
+    P_3d = np.zeros((K, K, L))
+
+    for i, j, value in zip(P_sparse.row, P_sparse.col, P_sparse.data):
+        state_index = i // L
+        action_index = i % L
+        P_3d[state_index, j, action_index] = value
+
+    return P_3d
