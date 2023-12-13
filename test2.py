@@ -131,11 +131,11 @@ if __name__ == "__main__":
         #     print("[guided solution] Correct optimal cost")
 
         # # freestyle solution
-        # tracemalloc.start()
-        # [J_opt, u_opt] = freestyle_solution(Constants)
-        # current,peak=tracemalloc.get_traced_memory()
-        # tracemalloc.stop()
-        # print(peak/2**20)
+        tracemalloc.start()
+        [J_opt, u_opt] = freestyle_solution(Constants)
+        current,peak=tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+        print(peak/2**20)
         # if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
         #     print("[freestyle solution] Wrong optimal cost")
         #     passed = False

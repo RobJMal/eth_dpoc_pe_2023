@@ -111,6 +111,10 @@ if __name__ == "__main__":
         [J_opt, u_opt] = freestyle_solution(Constants)
         if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
             print("[freestyle solution] Wrong optimal cost")
+            # G2=file["J"]-J_opt
+            # non_zero_indices = np.nonzero(G2)
+            # for index in zip(*non_zero_indices):
+            #     print(f"G{index} = {G[index]}")
             passed = False
         else:
             print("[freestyle solution] Correct optimal cost")
