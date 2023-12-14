@@ -29,6 +29,7 @@ import itertools
 import cProfile
 import time 
 
+
 if __name__ == "__main__":
     n_tests = 3 # 3
     for i in range(n_tests):
@@ -108,7 +109,9 @@ if __name__ == "__main__":
         print(f"VI vectorized took {end_time - start_time} seconds to run.")
 
         # freestyle solution
+        start_time = time.time()
         [J_opt, u_opt] = freestyle_solution(Constants)
+        end_time = time.time()
         if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
             print("[freestyle solution] Wrong optimal cost")
             # G2=file["J"]-J_opt
@@ -118,6 +121,7 @@ if __name__ == "__main__":
             passed = False
         else:
             print("[freestyle solution] Correct optimal cost")
+        print(f"VI freestyle took {end_time - start_time} seconds to run.")
 
         # Checking time for optimization
         # cprofile_function_name = f'compute_transition_probabilities(Constants)'

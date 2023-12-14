@@ -27,6 +27,7 @@ import cProfile
 from ComputeTransitionProbabilities import compute_transition_probabilities_sparse
 from ComputeStageCosts import compute_stage_cost
 
+
 # profiler = cProfile.Profile()
 
 def solution(P, G, alpha):
@@ -119,44 +120,33 @@ def solution(P, G, alpha):
     
     return J_opt, u_opt
 
+
+
 def solution_vectorized(P, G, alpha):
-    K,L = G.shape
+    K, L = G.shape
 
-
-    # J_opt = np.zeros(K)
-    J_opt = np.full(K, 1e03)    # Based on testing performance 
+    J_opt = np.full(K, 1e03)    # Initial high values
     u_opt = np.zeros(K) 
-    t = np.arange(0, Constants.Constants.T)  
-    z = np.arange(0, Constants.Constants.D)  
-    y = np.arange(0, Constants.Constants.N)  
-    x = np.arange(0, Constants.Constants.M)  
-      
-    state_space = np.array(list(itertools.product(t, z, y, x)))
 
-    # Convergence parameters
     epsilon = 1e-05
     delta_v = float('inf')
 
     while delta_v > epsilon:
-        J_copy = np.copy(J_opt)
+        J_prev = J_opt.copy()  # Keep a copy of the previous iteration's values
 
-        # Vectorized computation for each action
         for action in range(L):
-            # Compute the total cost for this action across all states
-            total_cost_action = G[:, action] + alpha * np.sum(P[:, :, action] * J_opt, axis=1)
+            J_opt_col_vector = J_opt.reshape(-1, 1)
+            total_cost_action = G[:, action] + alpha * (P[:, :, action] @ J_opt_col_vector).flatten()
 
-            # Update the optimal cost and policy
-            better_cost = total_cost_action < J_copy
-            J_copy[better_cost] = total_cost_action[better_cost]
+            # Update J_opt and u_opt directly
+            better_cost = total_cost_action < J_opt
+            J_opt[better_cost] = total_cost_action[better_cost]
             u_opt[better_cost] = action
 
-        # Check for convergence
-        delta_v = np.max(np.abs(J_copy - J_opt))
-        J_opt = J_copy
-
-        
+        delta_v = np.max(np.abs(J_opt - J_prev))
 
     return J_opt, u_opt
+
 
 
 def solution_freestyle(P, G, alpha):
@@ -208,7 +198,6 @@ def solution_freestyle(P, G, alpha):
 
     while delta_v > epsilon:
         delta_v = 0
-      
 
         # Keeping a copy so algorithm references previous values while this maintains current ones
         J_copy = np.copy(J_opt)
@@ -231,21 +220,16 @@ def solution_freestyle(P, G, alpha):
                 action_total = 0
 
                 for j in next_states_list:
-                    # transition_probability = P[i, j, action]
+
                     
                     index =(P.row == i * L + action) & (P.col == j)
 
-                    
-                    # print(index)
-
-                    # transition_probability=P[i * L + action,j]
                     if index.sum()>0:
-                        transition_probability=P.data[index][-1]
-                        # print(transition_probability)
+                        transition_probability=P.data[index][0]
+
                     else:
                         transition_probability=0
-                    
-                    # P_return.append(transition_probability)
+
                     
                     action_total += transition_probability*J_opt[j]
 
@@ -260,12 +244,10 @@ def solution_freestyle(P, G, alpha):
         
         
         J_opt = J_copy
-    # print(np.array(P_return).shape)
     return J_opt, u_opt
 
 # def solution_vectorized_freestyle(P, G, alpha):
-#     K = G.shape[0]
-#     L=3
+#     K,L = G.shape
 #     P = P.tocsr()
 #     # J_opt = np.zeros(K)
 #     J_opt = np.full(K, 1e03)    # Based on testing performance 
@@ -274,8 +256,6 @@ def solution_freestyle(P, G, alpha):
 #     z = np.arange(0, Constants.Constants.D)  
 #     y = np.arange(0, Constants.Constants.N)  
 #     x = np.arange(0, Constants.Constants.M)  
-      
-#     state_space = np.array(list(itertools.product(t, z, y, x)))
 
 #     # Convergence parameters
 #     epsilon = 1e-05
@@ -288,13 +268,11 @@ def solution_freestyle(P, G, alpha):
 #         for action in range(L):
 #             action_indices = np.arange(action, K * L, L)
 
-#     # Extract the rows for these indices
+
 #             P_action = P[action_indices, :]
 
-#     # Compute the total cost for this action across all states
 #             total_cost_action = G[:, action] + alpha * P_action.dot(J_opt)
 
-#             # Update the optimal cost and policy
 #             better_cost = total_cost_action < J_copy
 #             J_copy[better_cost] = total_cost_action[better_cost]
 #             u_opt[better_cost] = action
@@ -304,128 +282,34 @@ def solution_freestyle(P, G, alpha):
 #         J_opt = J_copy
 
 #     return J_opt, u_opt
+
 def solution_vectorized_freestyle(P, G, alpha):
-    K,L = G.shape
-
-
-    # J_opt = np.zeros(K)
+    K, L = G.shape
+    P = P.tocsr()
     J_opt = np.full(K, 1e03)    # Based on testing performance 
     u_opt = np.zeros(K) 
-    t = np.arange(0, Constants.Constants.T)  
-    z = np.arange(0, Constants.Constants.D)  
-    y = np.arange(0, Constants.Constants.N)  
-    x = np.arange(0, Constants.Constants.M)  
-      
-    state_space = np.array(list(itertools.product(t, z, y, x)))
 
     # Convergence parameters
     epsilon = 1e-05
     delta_v = float('inf')
 
     while delta_v > epsilon:
-        J_copy = np.copy(J_opt)
+        J_prev = J_opt.copy() 
 
-        # Vectorized computation for each action
         for action in range(L):
-            # Compute the total cost for this action across all states
-            P_action=get_action_probabilities_matrix(P, action, K, L)
-            total_cost_action = G[:, action] + alpha * np.sum(P_action * J_opt, axis=1)
+            action_indices = np.arange(action, K * L, L)
+            P_action = P[action_indices, :]
+            total_cost_action = G[:, action] + alpha * P_action.dot(J_opt)
 
-            # Update the optimal cost and policy
-            better_cost = total_cost_action < J_copy
-            J_copy[better_cost] = total_cost_action[better_cost]
+            better_cost = total_cost_action < J_opt
+            J_opt[better_cost] = total_cost_action[better_cost]
             u_opt[better_cost] = action
 
-        # Check for convergence
-        delta_v = np.max(np.abs(J_copy - J_opt))
-        J_opt = J_copy
-
-        
+        delta_v = np.max(np.abs(J_opt - J_prev))
 
     return J_opt, u_opt
 
-# def solution_vectorized_freestyle(P, G, alpha):
-#     # J_opt and u_opt initialization
-#     K = G.shape[0]
-#     L=G.shape[1]
 
-#     J_opt = np.full(K, 1e03)  # Based on testing performance 
-#     u_opt = np.zeros(K)
-
-#     # Convergence parameters
-#     epsilon = 1e-05
-#     delta_v = float('inf')
-
-#     while delta_v > epsilon:
-#         J_copy = np.copy(J_opt)
-
-#         # Vectorized computation for each action
-#         for action in range(L):
-#             total_cost_action = np.full(K, float('inf'))
-
-#             # Iterate over non-zero elements in P
-#             for row, col, p_value in zip(P.row, P.col, P.data):
-#                 state, action_p = divmod(row, L)
-
-#                 if action_p == action:
-#                     # Calculate expected cost for this state-action pair
-#                     expected_cost = G[state, action] + alpha * p_value * J_opt[col]
-#                     if expected_cost < total_cost_action[state]:
-#                         total_cost_action[state] = expected_cost
-
-#             # Update the optimal cost and policy
-#             better_cost = total_cost_action < J_copy
-#             J_copy[better_cost] = total_cost_action[better_cost]
-#             u_opt[better_cost] = action
-
-#         # Check for convergence
-#         delta_v = np.max(np.abs(J_copy - J_opt))
-#         J_opt = J_copy
-
-#     return J_opt, u_opt
-
-
-
-
-# def solution_vectorized_freestyle(P, G, alpha):
-#     # J_opt and u_opt initialization
-#     K,L=G.shape
-#     J_opt = np.full(K, 1e03)  # Based on testing performance 
-#     u_opt = np.zeros(K)
-
-#     # Convergence parameters
-#     epsilon = 1e-05
-#     delta_v = float('inf')
-
-#     # Precompute the expected future costs for each state-action pair
-#     expected_future_costs = np.zeros((K, L))
-#     for row, col, p_value in zip(P.row, P.col, P.data):
-#         state, action = divmod(row, L)
-#         expected_future_costs[state, action] += p_value * J_opt[col]
-
-#     while delta_v > epsilon:
-#         J_copy = np.copy(J_opt)
-
-#         # Vectorized computation for each action
-#         for action in range(L):
-#             # Compute the total cost for this action across all states
-#             total_cost_action = G[:, action] + alpha * expected_future_costs[:, action]
-
-#             # Update the optimal cost and policy
-#             better_cost = total_cost_action < J_copy
-#             J_copy[better_cost] = total_cost_action[better_cost]
-#             u_opt[better_cost] = action
-
-#         # Update the expected future costs for the next iteration
-#         for row, col, p_value in zip(P.row, P.col, P.data):
-#             state, action = divmod(row, L)
-#             expected_future_costs[state, action] += p_value * J_copy[col]
-
-#         # Check for convergence
-#         delta_v = np.max(np.abs(J_copy - J_opt))
-#         J_opt = J_copy
-
-#     return J_opt, u_opt
 
 
 
@@ -449,7 +333,7 @@ def freestyle_solution(Constants):
     P=compute_transition_probabilities_sparse(Constants)
     G=compute_stage_cost(Constants)
 
-    J_opt, u_opt=solution_freestyle(P, G, Constants.ALPHA)
+    J_opt, u_opt=solution_vectorized_freestyle(P, G, Constants.ALPHA)
 
 
     
@@ -611,31 +495,7 @@ def generate_possible_actions(current_state):
     print("Error with generate_possible_actions!!!")
     return []
 
-def get_action_probabilities_matrix(P_sparse, action, K, L):
-    """
-    Retrieves the transition probabilities for all states for a given action 
-    from a COO sparse matrix and returns them in a 2D NumPy array.
 
-    Args:
-    P_sparse (coo_matrix): The COO sparse matrix representing the transition probabilities.
-    action (int): The action index.
-    K (int): Size of the state space.
-    L (int): Size of the action space.
-
-    Returns:
-    np.array: A 2D numpy array of shape (K, K) where each row corresponds to a state and 
-              each column to a possible next state, containing the transition probabilities.
-    """
-    # Initialize the transition probabilities array
-    action_probabilities = np.zeros((K, K))
-
-    # Populate the transition probabilities array
-    for i, j, value in zip(P_sparse.row, P_sparse.col, P_sparse.data):
-        state, action_p = divmod(i, L)
-        if action_p == action:
-            action_probabilities[state, j] = value
-
-    return action_probabilities
 
 def get_transition_probabilities_for_state_action(P_csr, current_state, next_state,action, K, L):
 
