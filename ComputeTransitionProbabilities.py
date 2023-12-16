@@ -21,7 +21,6 @@ import numpy as np
 
 # Additional imports
 import itertools
-import Constants
 from scipy.sparse import coo_matrix
 
 def compute_transition_probabilities(Constants):
@@ -416,30 +415,6 @@ def compute_transition_probabilities_sparse(Constants):
 
     return P_sparse
 
-def print_state(state_name, i, state_space):
-    t_i=state_space[i][0]
-    z_i=state_space[i][1]
-    y_i=state_space[i][2]
-    x_i=state_space[i][3]
-
-    print(state_name + "(" + str(t_i) + ", " + str(z_i) + ", " + str(y_i) + ", " + str(x_i) + ")")
-
-def print_probabilities(name, i, state_space, Constants, P):
-
-    matrix_np=np.array(P)
-    sum_matrix=np.sum(matrix_np, axis=1)
-    
-    print(name + ", V_UP: " + str(sum_matrix[i][Constants.V_UP]))
-    print(name + ", V_STAY: " + str(sum_matrix[i][Constants.V_STAY]))
-    print(name + ", V_DOWN: " + str(sum_matrix[i][Constants.V_DOWN]))
-
-def map_state_to_index(input_state):
-    '''
-    Maps a state to the index in the P matrix 
-    '''
-    t_in, z_in, y_in, x_in = input_state[0], input_state[1], input_state[2], input_state[3]
-
-    return t_in*(Constants.Constants.D*Constants.Constants.N*Constants.Constants.M) + z_in*(Constants.Constants.N*Constants.Constants.M) + y_in*Constants.Constants.M + x_in
 
 def add_to_sparse_matrix(rows, cols, data,matrix_dict, i, j, l, value, L):
     """
@@ -464,26 +439,3 @@ def add_to_sparse_matrix(rows, cols, data,matrix_dict, i, j, l, value, L):
         # data.append(value)
         row_index= i*L+l
         matrix_dict[(row_index,j)]= value
-
-
-
-def coo_to_3d(P_sparse, K, L):
-    """
-    Converts a COO sparse matrix to a 3D numpy array.
-
-    Args:
-    P_sparse (coo_matrix): The COO sparse matrix to be converted.
-    K (int): Size of the state space.
-    L (int): Size of the action space.
-
-    Returns:
-    np.array: A 3D numpy array with shape (K, K, L).
-    """
-    P_3d = np.zeros((K, K, L))
-
-    for i, j, value in zip(P_sparse.row, P_sparse.col, P_sparse.data):
-        state_index = i // L
-        action_index = i % L
-        P_3d[state_index, j, action_index] = value
-
-    return P_3d
