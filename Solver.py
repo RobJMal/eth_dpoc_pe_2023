@@ -20,13 +20,6 @@
 
 import numpy as np
 
-# Additional imports
-import itertools
-import Constants
-import cProfile
-from ComputeTransitionProbabilities import compute_transition_probabilities_sparse
-from ComputeStageCosts import compute_stage_cost
-from scipy.sparse import csr_matrix
 
 def solution(P, G, alpha):
     """Computes the optimal cost and the optimal control input for each 
@@ -53,6 +46,7 @@ def solution(P, G, alpha):
         np.array: The optimal control policy for the discounted stochastic SPP
 
     """
+    from scipy.sparse import csr_matrix
     K, L = G.shape
 
     P_csr = [csr_matrix(P[:, :, action]) for action in range(L)]
@@ -93,6 +87,8 @@ def freestyle_solution(Constants):
         np.array: The optimal cost to go for the discounted stochastic SPP
         np.array: The optimal control policy for the discounted stochastic SPP
     """
+    from ComputeTransitionProbabilities import compute_transition_probabilities_sparse
+    from ComputeStageCosts import compute_stage_cost
     K = Constants.T * Constants.D * Constants.N * Constants.M
 
     J_opt = np.zeros(K)
