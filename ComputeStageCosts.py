@@ -37,7 +37,7 @@ def compute_stage_cost(Constants):
     """
     import itertools
 
-    def compute_solar_cost(Constants,state_space):
+    def compute_solar_cost(state_space):
         """Computes the solar cost for a given state_space.
 
         Args:
@@ -58,7 +58,7 @@ def compute_stage_cost(Constants):
         g_solar=np.min((x_c-x_sun)**2)
         return g_solar
     
-    def compute_cities_cost(Constants,state,x_city_coordinates,y_city_coordinates):
+    def compute_cities_cost(state,x_city_coordinates,y_city_coordinates):
         """Computes the connectivity cost for a given state.
 
         Args:
@@ -111,16 +111,16 @@ def compute_stage_cost(Constants):
     for i in range(K):
         if(state_space[i][1]==0):
             G[i,Constants.V_DOWN]=np.inf
-            G[i,Constants.V_STAY]=compute_cities_cost(Constants,state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(Constants,state_space[i])
-            G[i,Constants.V_UP]=compute_cities_cost(Constants,state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(Constants,state_space[i])
+            G[i,Constants.V_STAY]=compute_cities_cost(state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(state_space[i])
+            G[i,Constants.V_UP]=compute_cities_cost(state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(state_space[i])
         elif(state_space[i][1]==(Constants.D-1)):
-            G[i,Constants.V_DOWN]=compute_cities_cost(Constants,state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(Constants,state_space[i])
-            G[i,Constants.V_STAY]=compute_cities_cost(Constants,state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(Constants,state_space[i])
+            G[i,Constants.V_DOWN]=compute_cities_cost(state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(state_space[i])
+            G[i,Constants.V_STAY]=compute_cities_cost(state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(state_space[i])
             G[i,Constants.V_UP]=np.inf
         else:
-            G[i,Constants.V_DOWN]=compute_cities_cost(Constants,state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(Constants,state_space[i])
-            G[i,Constants.V_STAY]=compute_cities_cost(Constants,state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(Constants,state_space[i])
-            G[i,Constants.V_UP]=compute_cities_cost(Constants,state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(Constants,state_space[i])
+            G[i,Constants.V_DOWN]=compute_cities_cost(state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(state_space[i])
+            G[i,Constants.V_STAY]=compute_cities_cost(state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(state_space[i])
+            G[i,Constants.V_UP]=compute_cities_cost(state_space[i],x_city_coordinates,y_city_coordinates)+Constants.LAMBDA_TIMEZONE*compute_solar_cost(state_space[i])
 
 
         
