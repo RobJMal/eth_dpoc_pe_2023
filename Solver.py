@@ -80,179 +80,7 @@ def solution(P, G, alpha):
 
     return J_opt, u_opt
 
-
-
-
-
-
-
-
-
-def solution_freestyle(P, G, alpha):
-    """Computes the optimal cost and the optimal control input for each 
-    state of the state space solving the discounted stochastic shortest
-    path problem by:
-            - Value Iteration;
-            - Policy Iteration;
-            - Linear Programming; 
-            - or a combination of these.
-
-    Args:
-        P  (np.array): A (K x K x L)-matrix containing the transition probabilities
-                       between all states in the state space for all control inputs.
-                       The entry P(i, j, l) represents the transition probability
-                       from state i to state j if control input l is applied
-        G  (np.array): A (K x L)-matrix containing the stage costs of all states in
-                       the state space for all control inputs. The entry G(i, l)
-                       represents the cost if we are in state i and apply control
-                       input l
-        alpha (float): The discount factor for the problem
-
-    Returns:
-        np.array: The optimal cost to go for the discounted stochastic SPP
-        np.array: The optimal control policy for the discounted stochastic SPP
-
-    """
-    K,L= G.shape
-    # P=P.todok()
-    # P_return=[]
-    # J_opt = np.zeros(K)
-    J_opt = np.full(K, 1e03)    # Based on testing performance 
-    u_opt = np.zeros(K) 
     
-    # TODO implement Value Iteration, Policy Iteration, 
-    #      Linear Programming or a combination of these
-    t = np.arange(0, Constants.Constants.T)  
-    z = np.arange(0, Constants.Constants.D)  
-    y = np.arange(0, Constants.Constants.N)  
-    x = np.arange(0, Constants.Constants.M)  
-    state_space = np.array(list(itertools.product(t, z, y, x)))
-
-    # Implementing memoization, keeps copy of next states and action for given state
-    state_info_dict = {}
-
-    delta_v = float('inf')
-    epsilon = 9e-05
-
-
-    while delta_v > epsilon:
-        delta_v = 0
-
-        # Keeping a copy so algorithm references previous values while this maintains current ones
-        J_copy = np.copy(J_opt)
-
-        for i in range(K):
-
-            next_states_list = []
-            possible_actions_list = []
-
-            if i not in state_info_dict: 
-                next_states_list = generate_possible_next_states(state_space[i], state_space)
-                possible_actions_list = generate_possible_actions(state_space[i])
-
-                state_info_dict[i] = [next_states_list, possible_actions_list]
-
-            next_states_list = state_info_dict[i][0]
-            possible_actions_list = state_info_dict[i][1]
-
-            for action in possible_actions_list:
-                action_total = 0
-
-                for j in next_states_list:
-
-                    
-                    index =(P.row == i * L + action) & (P.col == j)
-
-                    if index.sum()>0:
-                        transition_probability=P.data[index][0]
-
-                    else:
-                        transition_probability=0
-
-                    
-                    action_total += transition_probability*J_opt[j]
-
-                stage_cost = G[i, action]
-                value_action = stage_cost + alpha * action_total
-
-                if value_action < J_copy[i]:
-                    J_copy[i] = value_action
-                    u_opt[i] = action
-                
-        delta_v = np.max(np.abs(J_copy - J_opt))
-        
-        
-        J_opt = J_copy
-    return J_opt, u_opt
-
-# def solution_vectorized_freestyle(P, G, alpha):
-#     K,L = G.shape
-#     P = P.tocsr()
-#     # J_opt = np.zeros(K)
-#     J_opt = np.full(K, 1e03)    # Based on testing performance 
-#     u_opt = np.zeros(K) 
-#     t = np.arange(0, Constants.Constants.T)  
-#     z = np.arange(0, Constants.Constants.D)  
-#     y = np.arange(0, Constants.Constants.N)  
-#     x = np.arange(0, Constants.Constants.M)  
-
-#     # Convergence parameters
-#     epsilon = 1e-05
-#     delta_v = float('inf')
-
-#     while delta_v > epsilon:
-#         J_copy = np.copy(J_opt)
-
-#         # Vectorized computation for each action
-#         for action in range(L):
-#             action_indices = np.arange(action, K * L, L)
-
-
-#             P_action = P[action_indices, :]
-
-#             total_cost_action = G[:, action] + alpha * P_action.dot(J_opt)
-
-#             better_cost = total_cost_action < J_copy
-#             J_copy[better_cost] = total_cost_action[better_cost]
-#             u_opt[better_cost] = action
-
-#         # Check for convergence
-#         delta_v = np.max(np.abs(J_copy - J_opt))
-#         J_opt = J_copy
-
-#     return J_opt, u_opt
-
-def solution_vectorized_freestyle(P, G, alpha):
-    K, L = G.shape
-    P = P.tocsr()
-    J_opt = np.full(K, 1e03)    # Based on testing performance 
-    u_opt = np.zeros(K) 
-
-    # Convergence parameters
-    epsilon = 9e-05
-    delta_v = float('inf')
-
-    while delta_v > epsilon:
-        J_prev = J_opt.copy() 
-
-        for action in range(L):
-            action_indices = np.arange(action, K * L, L)
-            P_action = P[action_indices, :]
-            total_cost_action = G[:, action] + alpha * P_action.dot(J_opt)
-
-            better_cost = total_cost_action < J_opt
-            J_opt[better_cost] = total_cost_action[better_cost]
-            u_opt[better_cost] = action
-
-        delta_v = np.max(np.abs(J_opt - J_prev))
-
-    return J_opt, u_opt
-
-
-
-
-
-
 def freestyle_solution(Constants):
     """Computes the optimal cost and the optimal control input for each 
     state of the state space solving the discounted stochastic shortest
@@ -272,15 +100,28 @@ def freestyle_solution(Constants):
     P=compute_transition_probabilities_sparse(Constants)
     G=compute_stage_cost(Constants)
 
-    J_opt, u_opt=solution_vectorized_freestyle(P, G, Constants.ALPHA)
+    K, L = G.shape
+    P = P.tocsr()
+    J_opt = np.full(K, 1e03)    # Based on testing performance 
+    u_opt = np.zeros(K) 
 
+    # Convergence parameters
+    epsilon = 9e-05
+    delta_v = float('inf')
 
-    
-    # TODO implement a solution that not necessarily adheres to
-    #      the solution template. You are free to use
-    #      compute_transition_probabilities and
-    #      compute_stage_cost, but you are also free to introduce
-    #      optimizations.
+    while delta_v > epsilon:
+        J_prev = J_opt.copy() 
+
+        for action in range(L):
+            action_indices = np.arange(action, K * L, L)
+            P_action = P[action_indices, :]
+            total_cost_action = G[:, action] + Constants.ALPHA * P_action.dot(J_opt)
+
+            better_cost = total_cost_action < J_opt
+            J_opt[better_cost] = total_cost_action[better_cost]
+            u_opt[better_cost] = action
+
+        delta_v = np.max(np.abs(J_opt - J_prev))
 
     return J_opt, u_opt
 
