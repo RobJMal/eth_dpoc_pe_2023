@@ -19,20 +19,14 @@
 
 import numpy as np
 from ComputeStageCosts import compute_stage_cost
-from ComputeTransitionProbabilities import compute_transition_probabilities, compute_transition_probabilities_sparse, coo_to_3d
+from ComputeTransitionProbabilities import compute_transition_probabilities
 from Constants import Constants
-from Solver import solution, freestyle_solution, solution_vectorized
+from Solver import solution, freestyle_solution
 import pickle
 import itertools
 
-# Additional imports
-import cProfile
-import time 
-from scipy.sparse import csr_matrix
-
-
 if __name__ == "__main__":
-    n_tests = 3 # 3
+    n_tests = 3
     for i in range(n_tests):
         print("-----------")
         print("Test " + str(i))
@@ -54,7 +48,6 @@ if __name__ == "__main__":
         # Begin tests
         K = len(state_space)
         P = compute_transition_probabilities(Constants)
-        # P = coo_to_3d(compute_transition_probabilities_sparse(Constants), K, 3)
         if not np.all(
             np.logical_or(np.isclose(P.sum(axis=1), 1), np.isclose(P.sum(axis=1), 0))
         ):
@@ -65,70 +58,31 @@ if __name__ == "__main__":
         G = compute_stage_cost(Constants)
         passed = True
         if not np.allclose(P, file["P"], rtol=1e-4, atol=1e-7):
-            # P2=file["P"]-P
-            # non_zero_indices = np.nonzero(P2)
-            # for index in zip(*non_zero_indices):
-            #     print(f"P{index} = {P2[index]}")
             print("Wrong transition probabilities")
-            # print(P[474,99,2])
             passed = False
         else:
             print("Correct transition probabilities")
 
         if not np.allclose(G, file["G"], rtol=1e-4, atol=1e-7):
-            print(G[498][1],file["G"][498][1])
             print("Wrong stage costs")
-            # G2=file["G"]-G
-            # non_zero_indices = np.nonzero(G2)
-            # for index in zip(*non_zero_indices):
-            #     print(f"G{index} = {G[index]}")
             passed = False
         else:
             print("Correct stage costs")
 
         # normal solution
-        start_time = time.time()
         [J_opt, u_opt] = solution(P, G, Constants.ALPHA)
-        end_time = time.time()
         if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
             print("[guided solution] Wrong optimal cost")
             passed = False
         else:
             print("[guided solution] Correct optimal cost")
-        print(f"VI non-vectorized took {end_time - start_time} seconds to run.")
-        print()
-
-        # Vectorized solution 
-        start_time = time.time()
-        P = compute_transition_probabilities(Constants)
-        G = compute_stage_cost(Constants)
-        [J_opt, u_opt] = solution_vectorized(P, G, Constants.ALPHA)
-        end_time = time.time()
-        if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
-            print("[guided solution] Wrong optimal cost")
-            passed = False
-        else:
-            print("[guided solution] Correct optimal cost")
-        print(f"VI vectorized took {end_time - start_time} seconds to run.")
 
         # freestyle solution
-        start_time = time.time()
         [J_opt, u_opt] = freestyle_solution(Constants)
-        end_time = time.time()
         if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
             print("[freestyle solution] Wrong optimal cost")
-            # G2=file["J"]-J_opt
-            # non_zero_indices = np.nonzero(G2)
-            # for index in zip(*non_zero_indices):
-            #     print(f"G{index} = {G[index]}")
             passed = False
         else:
             print("[freestyle solution] Correct optimal cost")
-        print(f"VI freestyle took {end_time - start_time} seconds to run.")
-
-        # Checking time for optimization
-        # cprofile_function_name = f'compute_transition_probabilities(Constants)'
-        # cprofile_file_name = 'optimization/compute_trans_prob_output_file_' + str(i) + '.prof'
-        # cProfile.run(cprofile_function_name, cprofile_file_name)
 
     print("-----------")
