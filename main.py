@@ -46,7 +46,7 @@ if __name__ == "__main__":
     transition_probabilities_implemented = True
     stage_costs_implemented = True
     solution_implemented = True
-    freestyle_solution_implemented = False
+    freestyle_solution_implemented = True
 
     # Compute transition probabilities
     if transition_probabilities_implemented and not freestyle_solution_implemented:

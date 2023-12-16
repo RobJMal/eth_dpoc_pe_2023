@@ -25,8 +25,14 @@ from Solver import solution, freestyle_solution
 import pickle
 import itertools
 
+# Additional imports
+import cProfile
+import time 
+from scipy.sparse import csr_matrix
+
+
 if __name__ == "__main__":
-    n_tests = 3
+    n_tests = 3 # 3
     for i in range(n_tests):
         print("-----------")
         print("Test " + str(i))
@@ -48,6 +54,7 @@ if __name__ == "__main__":
         # Begin tests
         K = len(state_space)
         P = compute_transition_probabilities(Constants)
+        # P = coo_to_3d(compute_transition_probabilities_sparse(Constants), K, 3)
         if not np.all(
             np.logical_or(np.isclose(P.sum(axis=1), 1), np.isclose(P.sum(axis=1), 0))
         ):
@@ -69,20 +76,41 @@ if __name__ == "__main__":
         else:
             print("Correct stage costs")
 
-        # normal solution
+        # Normal solution
+        start_time = time.time()
         [J_opt, u_opt] = solution(P, G, Constants.ALPHA)
+        end_time = time.time()
         if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
             print("[guided solution] Wrong optimal cost")
             passed = False
         else:
             print("[guided solution] Correct optimal cost")
+        print(f"[guided solution] took {end_time - start_time} seconds to run.")
+        print()
 
-        # freestyle solution
+        # Guided solution + P and G calcuations 
+        start_time = time.time()
+        P = compute_transition_probabilities(Constants)
+        G = compute_stage_cost(Constants)
+        [J_opt, u_opt] = solution(P, G, Constants.ALPHA)
+        end_time = time.time()
+        if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
+            print("[guided solution] Wrong optimal cost")
+            passed = False
+        else:
+            print("[guided solution] Correct optimal cost")
+        print(f"[guided solution] plus P and G took {end_time - start_time} seconds to run.")
+        print()
+
+        # Freestyle solution
+        start_time = time.time()
         [J_opt, u_opt] = freestyle_solution(Constants)
+        end_time = time.time()
         if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
             print("[freestyle solution] Wrong optimal cost")
             passed = False
         else:
             print("[freestyle solution] Correct optimal cost")
+        print(f"[freestyle solution] took {end_time - start_time} seconds to run.")
 
     print("-----------")
