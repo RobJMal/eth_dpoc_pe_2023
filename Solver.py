@@ -26,6 +26,8 @@ import Constants
 import cProfile
 from ComputeTransitionProbabilities import compute_transition_probabilities_sparse
 from ComputeStageCosts import compute_stage_cost
+from scipy.sparse import csr_matrix
+
 
 
 # profiler = cProfile.Profile()
@@ -122,23 +124,54 @@ def solution(P, G, alpha):
 
 
 
+# def solution_vectorized(P, G, alpha):
+#     K, L = G.shape
+
+#     J_opt = np.full(K, 1e03)    # Initial high values
+#     u_opt = np.zeros(K) 
+
+#     epsilon = 1e-05
+#     delta_v = float('inf')
+
+#     while delta_v > epsilon:
+#         J_prev = J_opt.copy()  # Keep a copy of the previous iteration's values
+
+#         for action in range(L):
+#             J_opt_col_vector = J_opt.reshape(-1, 1)
+#             total_cost_action = G[:, action] + alpha * (P[:, :, action] @ J_opt_col_vector).flatten()
+
+#             # Update J_opt and u_opt directly
+#             better_cost = total_cost_action < J_opt
+#             J_opt[better_cost] = total_cost_action[better_cost]
+#             u_opt[better_cost] = action
+
+#         delta_v = np.max(np.abs(J_opt - J_prev))
+
+#     return J_opt, u_opt
+
+
+
 def solution_vectorized(P, G, alpha):
     K, L = G.shape
 
-    J_opt = np.full(K, 1e03)    # Initial high values
+
+    P_csr = [csr_matrix(P[:, :, action]) for action in range(L)]
+
+    J_opt = np.full(K, 1e03)   
     u_opt = np.zeros(K) 
 
-    epsilon = 1e-05
+    epsilon = 9e-05
     delta_v = float('inf')
 
     while delta_v > epsilon:
-        J_prev = J_opt.copy()  # Keep a copy of the previous iteration's values
+        J_prev = J_opt.copy()  
 
         for action in range(L):
             J_opt_col_vector = J_opt.reshape(-1, 1)
-            total_cost_action = G[:, action] + alpha * (P[:, :, action] @ J_opt_col_vector).flatten()
+            
+            total_cost_action = G[:, action] + alpha * (P_csr[action].dot(J_opt_col_vector)).flatten()
 
-            # Update J_opt and u_opt directly
+
             better_cost = total_cost_action < J_opt
             J_opt[better_cost] = total_cost_action[better_cost]
             u_opt[better_cost] = action
@@ -146,6 +179,12 @@ def solution_vectorized(P, G, alpha):
         delta_v = np.max(np.abs(J_opt - J_prev))
 
     return J_opt, u_opt
+
+
+
+
+
+
 
 
 
@@ -290,7 +329,7 @@ def solution_vectorized_freestyle(P, G, alpha):
     u_opt = np.zeros(K) 
 
     # Convergence parameters
-    epsilon = 1e-05
+    epsilon = 9e-05
     delta_v = float('inf')
 
     while delta_v > epsilon:

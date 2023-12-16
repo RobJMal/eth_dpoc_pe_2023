@@ -68,10 +68,10 @@ class Constants:
     # Feel free to tweak these to test your solution.
 
     # State space constants
-    N = 15 # 3   # Size of the y axis (north to south)
-    M = 20 # 18  # Size of the x axis (west to east)
+    N =3 # 3   # Size of the y axis (north to south)
+    M = 18 # 18  # Size of the x axis (west to east)
     D = 4 # 4   # Size of the z axis (bottom to top)
-    T = 10 # 9   # Number of time subdivisions
+    T = 9 # 9   # Number of time subdivisions
 
     # Map constants
     N_CITIES = 5  # Number of cities
@@ -84,7 +84,7 @@ class Constants:
     LAMBDA_TIMEZONE = 0.4  # Factor in the cost related to the sun position
 
     # Discount factor
-    ALPHA = 0.99 # 0.9
+    ALPHA = 0.9 # 0.9
     
 
     # ----- Disturbances -----

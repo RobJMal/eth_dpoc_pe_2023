@@ -28,6 +28,7 @@ import itertools
 # Additional imports
 import cProfile
 import time 
+from scipy.sparse import csr_matrix
 
 
 if __name__ == "__main__":
@@ -99,6 +100,8 @@ if __name__ == "__main__":
 
         # Vectorized solution 
         start_time = time.time()
+        P = compute_transition_probabilities(Constants)
+        G = compute_stage_cost(Constants)
         [J_opt, u_opt] = solution_vectorized(P, G, Constants.ALPHA)
         end_time = time.time()
         if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
