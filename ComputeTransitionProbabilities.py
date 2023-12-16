@@ -19,9 +19,6 @@
 
 import numpy as np
 
-# Additional imports
-import itertools
-from scipy.sparse import coo_matrix
 
 def compute_transition_probabilities(Constants):
     """Computes the transition probability matrix P.
@@ -38,6 +35,7 @@ def compute_transition_probabilities(Constants):
     Returns:
         np.array: Transition probability matrix of shape (K,K,L).
     """
+    import itertools
     t = np.arange(0, Constants.T)  
     z = np.arange(0, Constants.D)  
     y = np.arange(0, Constants.N)  
@@ -198,6 +196,7 @@ def compute_transition_probabilities(Constants):
 
     return P
 
+
 def compute_transition_probabilities_sparse(Constants):
     """Computes the transition probability matrix P.
 
@@ -213,6 +212,9 @@ def compute_transition_probabilities_sparse(Constants):
     Returns:
         scipy.sparse: Transition probability matrix of shape 
     """
+    import itertools
+    from scipy.sparse import coo_matrix
+
     t = np.arange(0, Constants.T)  
     z = np.arange(0, Constants.D)  
     y = np.arange(0, Constants.N)  
