@@ -28,10 +28,6 @@ from ComputeTransitionProbabilities import compute_transition_probabilities_spar
 from ComputeStageCosts import compute_stage_cost
 from scipy.sparse import csr_matrix
 
-
-
-# profiler = cProfile.Profile()
-
 def solution(P, G, alpha):
     """Computes the optimal cost and the optimal control input for each 
     state of the state space solving the discounted stochastic shortest
@@ -57,103 +53,7 @@ def solution(P, G, alpha):
         np.array: The optimal control policy for the discounted stochastic SPP
 
     """
-    K = G.shape[0]
-
-    # J_opt = np.zeros(K)
-    J_opt = np.full(K, 1e03)    # Based on testing performance 
-    u_opt = np.zeros(K) 
-    
-    # TODO implement Value Iteration, Policy Iteration, 
-    #      Linear Programming or a combination of these
-    t = np.arange(0, Constants.Constants.T)  
-    z = np.arange(0, Constants.Constants.D)  
-    y = np.arange(0, Constants.Constants.N)  
-    x = np.arange(0, Constants.Constants.M)  
-    state_space = np.array(list(itertools.product(t, z, y, x)))
-
-    # Implementing memoization, keeps copy of next states and action for given state
-    state_info_dict = {}
-    P_return=[]
-    delta_v = float('inf')
-    epsilon = 9e-05
-    
-
-    while delta_v > epsilon:
-        delta_v = 0
-        
-
-        # Keeping a copy so algorithm references previous values while this maintains current ones
-        J_copy = np.copy(J_opt)
-
-        for i in range(K):
-
-            next_states_list = []
-            possible_actions_list = []
-
-            if i not in state_info_dict: 
-                next_states_list = generate_possible_next_states(state_space[i], state_space)
-                possible_actions_list = generate_possible_actions(state_space[i])
-
-                state_info_dict[i] = [next_states_list, possible_actions_list]
-
-            next_states_list = state_info_dict[i][0]
-            possible_actions_list = state_info_dict[i][1]
-
-            for action in possible_actions_list:
-                action_total = 0
-
-                for j in next_states_list:
-                    transition_probability = P[i, j, action]
-                    P_return.append(transition_probability)
-                    # print(transition_probability)
-                    action_total += transition_probability*J_opt[j]
-
-                stage_cost = G[i, action]
-                value_action = stage_cost + alpha * action_total
-
-                if value_action < J_copy[i]:
-                    J_copy[i] = value_action
-                    u_opt[i] = action
-                
-        delta_v = np.max(np.abs(J_copy - J_opt))
-        J_opt = J_copy
-        
-    # print(np.array(P_return).shape)
-    
-    return J_opt, u_opt
-
-
-
-# def solution_vectorized(P, G, alpha):
-#     K, L = G.shape
-
-#     J_opt = np.full(K, 1e03)    # Initial high values
-#     u_opt = np.zeros(K) 
-
-#     epsilon = 1e-05
-#     delta_v = float('inf')
-
-#     while delta_v > epsilon:
-#         J_prev = J_opt.copy()  # Keep a copy of the previous iteration's values
-
-#         for action in range(L):
-#             J_opt_col_vector = J_opt.reshape(-1, 1)
-#             total_cost_action = G[:, action] + alpha * (P[:, :, action] @ J_opt_col_vector).flatten()
-
-#             # Update J_opt and u_opt directly
-#             better_cost = total_cost_action < J_opt
-#             J_opt[better_cost] = total_cost_action[better_cost]
-#             u_opt[better_cost] = action
-
-#         delta_v = np.max(np.abs(J_opt - J_prev))
-
-#     return J_opt, u_opt
-
-
-
-def solution_vectorized(P, G, alpha):
     K, L = G.shape
-
 
     P_csr = [csr_matrix(P[:, :, action]) for action in range(L)]
 
