@@ -91,27 +91,28 @@ def compute_transition_probabilities(Constants):
         else:
             x_west_j=Constants.M-1
         
-        j_up=map_state_to_index((t_j, z_up_j, y_i, x_i))
-        j_stay=map_state_to_index((t_j, z_i, y_i, x_i))
-        j_down=map_state_to_index((t_j, z_down_j, y_i, x_i))
+        j_up = t_j*(Constants.D*Constants.N*Constants.M) + z_up_j*(Constants.N*Constants.M) + y_i*Constants.M + x_i
+        j_stay = t_j*(Constants.D*Constants.N*Constants.M) + z_i*(Constants.N*Constants.M) + y_i*Constants.M + x_i
+        j_down = t_j*(Constants.D*Constants.N*Constants.M) + z_down_j*(Constants.N*Constants.M) + y_i*Constants.M + x_i
 
-        j_up_east=map_state_to_index((t_j, z_up_j, y_i, x_east_j))
-        j_up_west=map_state_to_index((t_j, z_up_j, y_i, x_west_j))
+        j_up_east = t_j*(Constants.D*Constants.N*Constants.M) + z_up_j*(Constants.N*Constants.M) + y_i*Constants.M + x_east_j
+        j_up_west = t_j*(Constants.D*Constants.N*Constants.M) + z_up_j*(Constants.N*Constants.M) + y_i*Constants.M + x_west_j
 
-        j_stay_east=map_state_to_index((t_j, z_i, y_i, x_east_j))
-        j_stay_west=map_state_to_index((t_j, z_i, y_i, x_west_j))
+        j_stay_east = t_j*(Constants.D*Constants.N*Constants.M) + z_i*(Constants.N*Constants.M) + y_i*Constants.M + x_east_j
+        j_stay_west = t_j*(Constants.D*Constants.N*Constants.M) + z_i*(Constants.N*Constants.M) + y_i*Constants.M + x_west_j
 
-        j_down_east=map_state_to_index((t_j, z_down_j, y_i, x_east_j))
-        j_down_west=map_state_to_index((t_j, z_down_j, y_i, x_west_j))
+        j_down_east = t_j*(Constants.D*Constants.N*Constants.M) + z_down_j*(Constants.N*Constants.M) + y_i*Constants.M + x_east_j
+        j_down_west = t_j*(Constants.D*Constants.N*Constants.M) + z_down_j*(Constants.N*Constants.M) + y_i*Constants.M + x_west_j
 
-        j_up_north=map_state_to_index((t_j, z_up_j, y_north_j, x_i))
-        j_up_south=map_state_to_index((t_j, z_up_j, y_south_j, x_i))
+        j_up_north = t_j*(Constants.D*Constants.N*Constants.M) + z_up_j*(Constants.N*Constants.M) + y_north_j*Constants.M + x_i
+        j_up_south = t_j*(Constants.D*Constants.N*Constants.M) + z_up_j*(Constants.N*Constants.M) + y_south_j*Constants.M + x_i
 
-        j_stay_north=map_state_to_index((t_j, z_i, y_north_j, x_i))
-        j_stay_south=map_state_to_index((t_j, z_i, y_south_j, x_i))
+        j_stay_north = t_j*(Constants.D*Constants.N*Constants.M) + z_i*(Constants.N*Constants.M) + y_north_j*Constants.M + x_i
+        j_stay_south = t_j*(Constants.D*Constants.N*Constants.M) + z_i*(Constants.N*Constants.M) + y_south_j*Constants.M + x_i
 
-        j_down_north=map_state_to_index((t_j, z_down_j, y_north_j, x_i))
-        j_down_south=map_state_to_index((t_j, z_down_j, y_south_j, x_i))
+        j_down_north = t_j*(Constants.D*Constants.N*Constants.M) + z_down_j*(Constants.N*Constants.M) + y_north_j*Constants.M + x_i
+        j_down_south = t_j*(Constants.D*Constants.N*Constants.M) + z_down_j*(Constants.N*Constants.M) + y_south_j*Constants.M + x_i
+
 
         y_north_limit = 0
         y_south_limit = 0
@@ -270,27 +271,27 @@ def compute_transition_probabilities_sparse(Constants):
         else:
             x_west_j=Constants.M-1
         
-        j_up=map_state_to_index((t_j, z_up_j, y_i, x_i))
-        j_stay=map_state_to_index((t_j, z_i, y_i, x_i))
-        j_down=map_state_to_index((t_j, z_down_j, y_i, x_i))
+        j_up = t_j*(Constants.D*Constants.N*Constants.M) + z_up_j*(Constants.N*Constants.M) + y_i*Constants.M + x_i
+        j_stay = t_j*(Constants.D*Constants.N*Constants.M) + z_i*(Constants.N*Constants.M) + y_i*Constants.M + x_i
+        j_down = t_j*(Constants.D*Constants.N*Constants.M) + z_down_j*(Constants.N*Constants.M) + y_i*Constants.M + x_i
 
-        j_up_east=map_state_to_index((t_j, z_up_j, y_i, x_east_j))
-        j_up_west=map_state_to_index((t_j, z_up_j, y_i, x_west_j))
+        j_up_east = t_j*(Constants.D*Constants.N*Constants.M) + z_up_j*(Constants.N*Constants.M) + y_i*Constants.M + x_east_j
+        j_up_west = t_j*(Constants.D*Constants.N*Constants.M) + z_up_j*(Constants.N*Constants.M) + y_i*Constants.M + x_west_j
 
-        j_stay_east=map_state_to_index((t_j, z_i, y_i, x_east_j))
-        j_stay_west=map_state_to_index((t_j, z_i, y_i, x_west_j))
+        j_stay_east = t_j*(Constants.D*Constants.N*Constants.M) + z_i*(Constants.N*Constants.M) + y_i*Constants.M + x_east_j
+        j_stay_west = t_j*(Constants.D*Constants.N*Constants.M) + z_i*(Constants.N*Constants.M) + y_i*Constants.M + x_west_j
 
-        j_down_east=map_state_to_index((t_j, z_down_j, y_i, x_east_j))
-        j_down_west=map_state_to_index((t_j, z_down_j, y_i, x_west_j))
+        j_down_east = t_j*(Constants.D*Constants.N*Constants.M) + z_down_j*(Constants.N*Constants.M) + y_i*Constants.M + x_east_j
+        j_down_west = t_j*(Constants.D*Constants.N*Constants.M) + z_down_j*(Constants.N*Constants.M) + y_i*Constants.M + x_west_j
 
-        j_up_north=map_state_to_index((t_j, z_up_j, y_north_j, x_i))
-        j_up_south=map_state_to_index((t_j, z_up_j, y_south_j, x_i))
+        j_up_north = t_j*(Constants.D*Constants.N*Constants.M) + z_up_j*(Constants.N*Constants.M) + y_north_j*Constants.M + x_i
+        j_up_south = t_j*(Constants.D*Constants.N*Constants.M) + z_up_j*(Constants.N*Constants.M) + y_south_j*Constants.M + x_i
 
-        j_stay_north=map_state_to_index((t_j, z_i, y_north_j, x_i))
-        j_stay_south=map_state_to_index((t_j, z_i, y_south_j, x_i))
+        j_stay_north = t_j*(Constants.D*Constants.N*Constants.M) + z_i*(Constants.N*Constants.M) + y_north_j*Constants.M + x_i
+        j_stay_south = t_j*(Constants.D*Constants.N*Constants.M) + z_i*(Constants.N*Constants.M) + y_south_j*Constants.M + x_i
 
-        j_down_north=map_state_to_index((t_j, z_down_j, y_north_j, x_i))
-        j_down_south=map_state_to_index((t_j, z_down_j, y_south_j, x_i))
+        j_down_north = t_j*(Constants.D*Constants.N*Constants.M) + z_down_j*(Constants.N*Constants.M) + y_north_j*Constants.M + x_i
+        j_down_south = t_j*(Constants.D*Constants.N*Constants.M) + z_down_j*(Constants.N*Constants.M) + y_south_j*Constants.M + x_i
 
         y_north_limit = 0
         y_south_limit = 0
