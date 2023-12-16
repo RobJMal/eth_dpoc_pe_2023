@@ -65,28 +65,18 @@ if __name__ == "__main__":
         G = compute_stage_cost(Constants)
         passed = True
         if not np.allclose(P, file["P"], rtol=1e-4, atol=1e-7):
-            # P2=file["P"]-P
-            # non_zero_indices = np.nonzero(P2)
-            # for index in zip(*non_zero_indices):
-            #     print(f"P{index} = {P2[index]}")
             print("Wrong transition probabilities")
-            # print(P[474,99,2])
             passed = False
         else:
             print("Correct transition probabilities")
 
         if not np.allclose(G, file["G"], rtol=1e-4, atol=1e-7):
-            print(G[498][1],file["G"][498][1])
             print("Wrong stage costs")
-            # G2=file["G"]-G
-            # non_zero_indices = np.nonzero(G2)
-            # for index in zip(*non_zero_indices):
-            #     print(f"G{index} = {G[index]}")
             passed = False
         else:
             print("Correct stage costs")
 
-        # normal solution
+        # Normal solution
         start_time = time.time()
         [J_opt, u_opt] = solution(P, G, Constants.ALPHA)
         end_time = time.time()
@@ -95,10 +85,10 @@ if __name__ == "__main__":
             passed = False
         else:
             print("[guided solution] Correct optimal cost")
-        print(f"VI non-vectorized took {end_time - start_time} seconds to run.")
+        print(f"[guided solution] took {end_time - start_time} seconds to run.")
         print()
 
-        # Vectorized solution 
+        # Guided solution + P and G calcuations 
         start_time = time.time()
         P = compute_transition_probabilities(Constants)
         G = compute_stage_cost(Constants)
@@ -109,26 +99,18 @@ if __name__ == "__main__":
             passed = False
         else:
             print("[guided solution] Correct optimal cost")
-        print(f"VI vectorized took {end_time - start_time} seconds to run.")
+        print(f"[guided solution] plus P and G took {end_time - start_time} seconds to run.")
+        print()
 
-        # freestyle solution
+        # Freestyle solution
         start_time = time.time()
         [J_opt, u_opt] = freestyle_solution(Constants)
         end_time = time.time()
         if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
             print("[freestyle solution] Wrong optimal cost")
-            # G2=file["J"]-J_opt
-            # non_zero_indices = np.nonzero(G2)
-            # for index in zip(*non_zero_indices):
-            #     print(f"G{index} = {G[index]}")
             passed = False
         else:
             print("[freestyle solution] Correct optimal cost")
-        print(f"VI freestyle took {end_time - start_time} seconds to run.")
-
-        # Checking time for optimization
-        # cprofile_function_name = f'compute_transition_probabilities(Constants)'
-        # cprofile_file_name = 'optimization/compute_trans_prob_output_file_' + str(i) + '.prof'
-        # cProfile.run(cprofile_function_name, cprofile_file_name)
+        print(f"[freestyle solution] took {end_time - start_time} seconds to run.")
 
     print("-----------")
