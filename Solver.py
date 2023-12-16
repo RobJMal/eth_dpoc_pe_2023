@@ -88,8 +88,10 @@ def freestyle_solution(Constants):
         np.array: The optimal control policy for the discounted stochastic SPP
     """
     from ComputeStageCosts import compute_stage_cost
+    import itertools
+    from scipy.sparse import coo_matrix
 
-    def compute_transition_probabilities_sparse(Constants):
+    def compute_transition_probabilities_sparse():
         """Computes the transition probability matrix P.
 
         It is of size (K,K,L) where:
@@ -99,16 +101,11 @@ def freestyle_solution(Constants):
                 from the state i to the state j when input l is applied.
 
         Args:
-            Constants: The constants describing the problem instance.
+            - None
 
         Returns:
-            scipy.sparse: Transition probability matrix of shape 
+            - scipy.sparse: Transition probability matrix of shape 
         """
-        import itertools
-        from scipy.sparse import coo_matrix
-
-        
-
         t = np.arange(0, Constants.T)  
         z = np.arange(0, Constants.D)  
         y = np.arange(0, Constants.N)  
@@ -332,7 +329,7 @@ def freestyle_solution(Constants):
 
     J_opt = np.zeros(K)
     u_opt = np.zeros(K)
-    P=compute_transition_probabilities_sparse(Constants)
+    P=compute_transition_probabilities_sparse()
     G=compute_stage_cost(Constants)
 
     K, L = G.shape

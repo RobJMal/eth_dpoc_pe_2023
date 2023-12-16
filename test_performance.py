@@ -19,7 +19,7 @@
 
 import numpy as np
 from ComputeStageCosts import compute_stage_cost
-from ComputeTransitionProbabilities import compute_transition_probabilities, compute_transition_probabilities_sparse, coo_to_3d
+from ComputeTransitionProbabilities import compute_transition_probabilities
 from Constants import Constants
 from Solver import solution, freestyle_solution
 import pickle
