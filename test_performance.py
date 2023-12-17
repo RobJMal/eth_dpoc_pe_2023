@@ -113,4 +113,23 @@ if __name__ == "__main__":
             print("[freestyle solution] Correct optimal cost")
         print(f"[freestyle solution] took {end_time - start_time} seconds to run.")
 
+        start_time = time.time()
+        P = compute_transition_probabilities(Constants)
+        end_time = time.time()
+        print(f"P took {end_time - start_time} seconds to run.")
+
+        start_time = time.time()
+        G = compute_stage_cost(Constants)
+        end_time = time.time()
+        print(f"G took {end_time - start_time} seconds to run.")
+
+        # Checking time for optimization
+        cprofile_function_name = f'compute_transition_probabilities(Constants)'
+        cprofile_file_name = 'optimization/P_output_file_' + str(i) + '.prof'
+        cProfile.run(cprofile_function_name, cprofile_file_name)
+
+        cprofile_function_name = f'compute_stage_cost(Constants)'
+        cprofile_file_name = 'optimization/G_output_file_' + str(i) + '.prof'
+        cProfile.run(cprofile_function_name, cprofile_file_name)
+
     print("-----------")
