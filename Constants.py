@@ -68,13 +68,13 @@ class Constants:
     # Feel free to tweak these to test your solution.
 
     # State space constants
-    N = 15   # Size of the y axis (north to south)
+    N = 15  # Size of the y axis (north to south)
     M = 20  # Size of the x axis (west to east)
-    D = 4   # Size of the z axis (bottom to top)
+    D = 4  # Size of the z axis (bottom to top)
     T = 10   # Number of time subdivisions
 
     # Map constants
-    N_CITIES = 5  # Number of cities
+    N_CITIES = 1  # Number of cities
 
 
     # ----- Factors -----
