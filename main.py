@@ -115,7 +115,7 @@ if __name__ == "__main__":
 
         # TODO implement this function in Solver.py
         J_opt, u_opt = freestyle_solution(Constants)
-
+       
         current, peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
         print("\r[X] Discounted stochastic shortest path problem solved.   ")

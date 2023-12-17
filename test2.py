@@ -19,9 +19,9 @@
 
 import numpy as np
 from ComputeStageCosts import compute_stage_cost
-from ComputeTransitionProbabilities import compute_transition_probabilities, compute_transition_probabilities_sparse, coo_to_3d
+from ComputeTransitionProbabilities import compute_transition_probabilities
 from Constants import Constants
-from Solver import solution, freestyle_solution, solution_vectorized
+from Solver import solution, freestyle_solution
 import pickle
 import itertools
 import tracemalloc
@@ -114,7 +114,7 @@ if __name__ == "__main__":
         
         # Vectorized solution 
         start_time = time.time()
-        [J_opt, u_opt] = solution_vectorized(P, G, Constants.ALPHA)
+        [J_opt, u_opt] = solution(P, G, Constants.ALPHA)
         end_time = time.time()
         # if not np.allclose(J_opt, file["J"], rtol=1e-4, atol=1e-7):
         #     print("[guided solution] Wrong optimal cost")
