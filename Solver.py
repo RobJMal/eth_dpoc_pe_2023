@@ -51,7 +51,7 @@ def solution(P, G, alpha):
 
     P_csr = [csr_matrix(P[:, :, action]) for action in range(L)]
 
-    J_opt = np.full(K, 1e03)   
+    J_opt = np.full(K, 1e15)   
     u_opt = np.zeros(K) 
 
     epsilon = 9e-05
@@ -334,7 +334,7 @@ def freestyle_solution(Constants):
 
     K, L = G.shape
     P = P.tocsr()
-    J_opt = np.full(K, 1e03)    # Based on testing performance 
+    J_opt = np.full(K, 1e15)    # Based on testing performance 
     u_opt = np.zeros(K) 
 
     # Convergence parameters
